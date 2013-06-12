@@ -1,9 +1,9 @@
 require("lib/strings")
 require("boulderdash")
 require("moai_extensions")	-- helpful stuff
-
-
 require("levels/load")
+require("input")
+require("scoreboard")
 -- require("keyboard")
 
 
@@ -12,53 +12,12 @@ gamePaused = false
 STAGE_WIDTH = 960/1.2 -- (iPhone4=960, iPhone5=1136, iPad3+=2048)
 STAGE_HEIGHT = 640/1.2 -- (iPhone4=640, iPhone5=640, iPad3+=1536)
 
-touching = nil
 
-
-local mouseX, mouseY, posX, posY
--- this is to keep reference to what's being dragged
-local currentlyTouchedProp 
- 
-local function dragObject ( object, x, y )
-	print ("Dragging")
+local function onDraw ( index, xOff, yOff, xFlip, yFlip )
+        MOAIGfxDevice.setPenColor ( 1, 0, 0, 1 )
+        MOAIDraw.drawRect(-64, 64, 64, -64)
 end
 
-local function pointerCallback ( x, y )
-	-- this function is called when the touch is registered (before clickCallback)
-	-- or when the mouse cursor is moved
-	mouseX, mouseY = layer:wndToWorld ( x, y )
-
-	posX = math.floor(mouseX/32 + (STAGE_WIDTH/2/32))
-	posY = math.ceil(-mouseY/32 + (STAGE_HEIGHT/2/32))
---	print ("mouse moved", x, y, mouseX, mouseY)	
-	
-end
- 
-function clickCallback ( down )
-	-- this function is called when touch/click 
-	-- is registered
-	if down then
-		local pick = partition:propForPoint ( mouseX, mouseY )
-		if pick then
-			touching = pick.tag
-			MOAIDraw.drawRect ( 100,-50,200,-150 )
-		end
-	
-
-		print ("Click!", posX, posY)
-	
-		for i, object in pairs(boulderdash.objects) do
-			if (object.x==posX and object.y==posY) then
-				print("DEBUG ",object.type, object.x, object.y)
-			end
-		end
-	else
-		touching = nil
-	end
-	-- local object = boulderdash:findByID(id(posX,posY))
-	-- print("DEBUG ",object.type, object.x, object.y)
-	
-end
 
 function gameloop:load()
 		
@@ -78,57 +37,29 @@ function gameloop:load()
 	-- 4. 
 	layer = MOAILayer2D.new ()
 	layer:setViewport ( viewport )
---	layer:setClearColor (0.53, 0.53, 0.53, 1)
-	
+
+	hud_layer = input:createHud(viewport)
+	scoreboard_layer = scoreboard:createScoreboard(viewport)
 
 	
+	camera = MOAICamera2D.new ()	
+	layer:setCamera(camera)
 	
-	hud_layer = MOAILayer2D.new ()
-	hud_layer:setViewport ( viewport )
-	
-	-- 5. catch user interactions
-	partition = MOAIPartition.new ()
-	hud_layer:setPartition ( partition )
-	
-	
-	hud_layer:insertProp(Moai:createHudButton("left", 100,-50,200,-150))
-	hud_layer:insertProp(Moai:createHudButton("right", 250,-50,350,-150))
-	hud_layer:insertProp(Moai:createHudButton("up", 175,50,275,-50))
-	hud_layer:insertProp(Moai:createHudButton("down", 175,-150,275,-250))	
+--	scoreboard_layer = scoreboard:create(viewport)
 
 	
+--	scoreboard_layer:setClearColor (0.53, 0.53, 0.53)
+	
+
+
 	-- 6.
-	MOAIRenderMgr.setRenderTable ( { layer, hud_layer } )
+	MOAIRenderMgr.setRenderTable ( { layer, hud_layer, scoreboard_layer } )
 	
 	level_loader:load()
-
-
 
 	boulderdash:Startup()
 	boulderdash:LevelUp()
 	
-
-
-	-- Here we register callback functions for input - both mouse and touch
-	if MOAIInputMgr.device.pointer then
-		-- mouse input
-		MOAIInputMgr.device.pointer:setCallback ( pointerCallback )
-		MOAIInputMgr.device.mouseLeft:setCallback ( clickCallback )
-	else
-		-- touch input
-		MOAIInputMgr.device.touch:setCallback ( 
-			-- this is called on every touch event
-			function ( eventType, idx, x, y, tapCount )
-				pointerCallback ( x, y ) -- first set location of the touch
-				if eventType == MOAITouchSensor.TOUCH_DOWN then
-					clickCallback ( true )
-				elseif eventType == MOAITouchSensor.TOUCH_UP then
-					clickCallback ( false )
-				end
-			end
-		)
-	end	
-
 end
 
 

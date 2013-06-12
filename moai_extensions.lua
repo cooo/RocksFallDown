@@ -3,19 +3,22 @@ Moai = {}
 local textureCache = {}
 
 function Moai:cachedTexture( name, width, height )
-  if textureCache[name] == nil then
-    textureCache[name] = MOAIGfxQuad2D.new ()
-    textureCache[name]:setTexture ( name )
-	textureCache[name]:setRect ( 0, 0, width, height )
-  end
-  return textureCache[ name ]
+	if textureCache[name] == nil then
+		textureCache[name] = MOAIGfxQuad2D.new ()
+		textureCache[name]:setTexture ( name )
+		textureCache[name]:setRect ( 0, 0, width, height )
+	end
+	return textureCache[ name ]
 end
 
+function Moai:x_and_y(x,y)
+	return x*32 - (STAGE_WIDTH/2), -y*32 + (STAGE_HEIGHT/2) - 32
+end
 
 function Moai:createProp(quad, x, y)
 	local prop = MOAIProp2D.new()
 	prop:setDeck( quad )
-	prop:setLoc( x*32 - (STAGE_WIDTH/2), -y*32 + (STAGE_HEIGHT/2) )
+	prop:setLoc( Moai:x_and_y(x,y) )
 	layer:insertProp(prop)
 	return prop
 end
@@ -23,13 +26,10 @@ end
 
 function Moai:createLoopTimer ( spanTime, callbackFunction )
 	local timer = MOAITimer.new ()
-	timer:setSpan ( spanTime )
-	timer:setMode ( MOAITimer.LOOP )
-	timer:setListener ( MOAITimer.EVENT_TIMER_LOOP, callbackFunction )
-	timer:start ()
-	-- if ( fireRightAway ) then
-	-- 	callbackFunction () 
-	-- end
+	timer:setSpan( spanTime )
+	timer:setMode( MOAITimer.LOOP )
+	timer:setListener( MOAITimer.EVENT_TIMER_LOOP, callbackFunction )
+	timer:start()
 	return timer
 end
 
@@ -37,11 +37,12 @@ function Moai:createHudButton(tag, x0,y0,x1,y1) --250,-50,350,-150
 		
 	local scriptDeck = MOAIScriptDeck.new()
 	scriptDeck:setRect(x0,y0,x1,y1)
-	scriptDeck:setDrawCallback(function ()
-
-		MOAIGfxDevice.setPenWidth(3)
-	    MOAIDraw.drawRect ( x0,y0,x1,y1 )
-	end)
+	scriptDeck:setDrawCallback(
+		function ()
+			MOAIGfxDevice.setPenWidth(3)
+			MOAIDraw.drawRect ( x0,y0,x1,y1 )
+		end
+	)
 
 	local prop = MOAIProp2D.new()
 	prop:setDeck(scriptDeck)
@@ -59,8 +60,6 @@ function Moai:createHudButton(tag, x0,y0,x1,y1) --250,-50,350,-150
 	-- anim = MOAIAnim:new ()
 	-- anim:reserveLinks ( 1 )
 	-- anim:setLink ( 1, curve, prop, MOAIProp2D.ATTR_INDEX )
-	
-	
 	
 	return prop
 end

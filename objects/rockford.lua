@@ -9,6 +9,12 @@ rockford.grab = false
 rockford.key = nil
 rockford.restless_timer = nil
 rockford.config_animations = {
+	entrance = {
+		offset = 1,
+        length = 4,
+        time = 0.125,
+        mode = MOAITimer.NORMAL
+	},
 	wink = {
 		offset = 8,
         length = 8,
@@ -49,12 +55,9 @@ local directions = { {x=-1,y=0}, {x=0,y=-1}, {x=1,y=0}, {x=0,y=1} }
 
 
 function rockford:animateRockford(name, offset, length, time, mode)	-- lenght=number of frames, offset=start index
-	-- self.remapper = MOAIDeckRemapper.new ()
-	-- self.remapper:reserve ( 1 )
-	-- self.prop:setRemapper ( self.remapper )
 
 	local curve = MOAIAnimCurve.new()
-	curve:reserveKeys (8)
+	curve:reserveKeys (length)
 	-- curve:setKey (1, 0,           offset,        MOAIEaseType.FLAT)
 	-- curve:setKey (2, time*length, offset+length, MOAIEaseType.FLAT)
 	
@@ -94,10 +97,7 @@ end
 
 -- he gets a little nervous when he doesn't have anything to do
 function rockford:wink()
-print(rockford.id, "winks")
-    local x,y = rockford:getPos()
-
-	local random = math.random(1, 3)  -- pick (WINK_OFFSET, TAP_OFFSET, WINK_TAP_OFFSET) => (8,16 or 24)
+	local random   = math.random(1, 3)
 	local twitches = { "wink", "tap", "winktap"}
 	rockford:startAnimation(twitches[random])
 end
@@ -110,7 +110,7 @@ function rockford:load( x, y )
 	
 	rockford.prop = MOAIProp2D.new ()
 	rockford.prop:setDeck ( tileDeck )
-	rockford.prop:setLoc ( x*32 - (STAGE_WIDTH/2), -y*32 + (STAGE_HEIGHT/2) )
+	rockford.prop:setLoc ( Moai:x_and_y(x,y) )
 
 	layer:insertProp(rockford.prop)
 		
@@ -120,6 +120,8 @@ function rockford:load( x, y )
     end
 
     rockford.restless_timer = Moai:createLoopTimer(2.0, rockford.wink)
+
+	rockford:startAnimation("entrance")
 	
 	if(MOAIInputMgr.device.keyboard) then
 
@@ -158,7 +160,7 @@ end
 
 function rockford:update(dt)
 	local x,y = self:getPos()
-	self.prop:setLoc ( x*32 - (STAGE_WIDTH/2), -y*32 + (STAGE_HEIGHT/2) )
+	self.prop:setLoc (Moai:x_and_y(x,y) )
 	
 	self:move(dt)
 	self:he_might_die()
@@ -192,13 +194,13 @@ function rockford:move(dt)
 			rockford:LeftOrRight(1)
 		end
 		
-		if (touching == "left") then
+		if (input.touching == "left") then
 			rockford:LeftOrRight(-1)
-		elseif (touching == "right") then
+		elseif (input.touching == "right") then
 			rockford:LeftOrRight(1)
-		elseif (touching == "up") then
+		elseif (input.touching == "up") then
 			rockford:UpOrDown(-1)
-		elseif (touching == "down") then
+		elseif (input.touching == "down") then
 			rockford:UpOrDown(1)
 		end
 	
@@ -314,12 +316,18 @@ function rockford:doMoveRockford(x,y)
 	-- 11 -> 10 no move
 	-- 11 -> 12 move camera
 	-- 12 -> 11 move camera
+	
 
-	-- if ((xr+x>10 and xr>10) and (xr<27 and xr+x<27)) then
-	-- 	camera:move(x*self.scale,0)
-	-- end
+	if ((xr+x>10 and xr>10) and (xr<27 and xr+x<27)) then
+		camera:moveLoc ( x*self.scale, 0, 0.5 )
+	end
+
+	if ((yr>10 and yr+y>10) and (yr+y<19 and yr<19)) then
+		camera:moveLoc(0, -y*self.scale, 0.5)
+	end
+	
 	-- if ((yr>7 and yr+y>7) and (yr<13 and yr+y<13)) then
-	-- 	camera:move(0,y*self.scale)
+	-- 	camera:moveLoc(0, -y*self.scale, 0.25)
 	-- end
 	
 end

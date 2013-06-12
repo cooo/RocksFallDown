@@ -11,10 +11,9 @@
 -- 
 -- function gameloop:draw()
 -- end
+
 FRAMES = 60
 require("gameloop")
-
-
 
 local function forever(dt)
 	gameloop:update(dt)
@@ -22,15 +21,15 @@ local function forever(dt)
 end
 
 local function newLoopingTimer ( spanTime, func )
-	local timer = MOAITimer.new ()
-	timer:setSpan ( spanTime )
-	timer:setMode ( MOAITimer.LOOP )
-	timer:setListener ( MOAITimer.EVENT_TIMER_LOOP, 
-		function ()
-	      func( spanTime )
-	    end
+	local timer = MOAITimer.new()
+	timer:setSpan( spanTime )
+	timer:setMode( MOAITimer.LOOP )
+	timer:setListener( MOAITimer.EVENT_TIMER_LOOP, 
+		function()
+			func( spanTime )
+		end
 	)
-	timer:start ()
+	timer:start()
 	return timer
 end
 

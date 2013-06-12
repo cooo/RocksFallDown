@@ -19,7 +19,7 @@ function diamond:load( x, y )
 
 	diamond.prop = MOAIProp2D.new ()
 	diamond.prop:setDeck ( tileDeck )
-	diamond.prop:setLoc ( x*32 - (STAGE_WIDTH/2), -y*32 + (STAGE_HEIGHT/2) )
+	diamond.prop:setLoc ( Moai:x_and_y(x,y) )
 	
 	local curve = MOAIAnimCurve.new ()
 
@@ -41,7 +41,7 @@ function diamond:update(dt)
   	self:fall()
 
 	local x,y = self:getPos()
-	diamond.prop:setLoc ( x*32 - (STAGE_WIDTH/2), -y*32 + (STAGE_HEIGHT/2) )
+	diamond.prop:setLoc ( Moai:x_and_y(x,y) )
 end
 
 function diamond:draw()

@@ -1,6 +1,5 @@
-require("camera")
 require("levels/levels")
-require("scoreboard")
+
 require("amoebas")
 require("audio")
 require("menu")
@@ -68,10 +67,9 @@ end
 
 function boulderdash:LevelUp()
 	self.objects = {}
+	local xc,yc = camera:getLoc()
+	camera:moveLoc(-xc, -yc, 2.0) 
 
-
-
-	
 	self.map = MOAIGrid.new()
 	self.map:initRectGrid(1,1,32,32)
 	
@@ -83,11 +81,6 @@ function boulderdash:LevelUp()
 		end
 	end
 	
-	local k = 0
-	for i, object in pairs(boulderdash.objects) do
-		k = k + 1
-	end
-	print("level up: ".. k)
 
 	-- local xc,yc = boulderdash:Replace("rockford", "entrance")
 	-- 
@@ -96,7 +89,7 @@ function boulderdash:LevelUp()
 	-- boulderdash.dead = false
 	-- boulderdash.died = false
 	-- boulderdash.start_over = false
-	-- boulderdash.diamonds = 0
+	boulderdash.diamonds = 0
 	-- boulderdash.magictime = level_loader.games[menu.game_index].caves[menu.cave_index].magictime or 0
 	-- boulderdash.magicwall_dormant = true
 	-- boulderdash.magicwall_expired = false
@@ -104,7 +97,7 @@ function boulderdash:LevelUp()
 	-- amoebas:init(tonumber(level_loader.games[menu.game_index].caves[menu.cave_index].amoebatime))
 	-- 
 	-- delay = 0.1
-	-- scoreboard:load()
+	scoreboard:load()
 	-- 
 	-- if (xc<11)then
 	-- 	xc = 0
@@ -121,9 +114,9 @@ function boulderdash:LevelUp()
 	-- elseif ((yc>=7 and (yc<13))) then
 	-- 	yc = yc - 8
 	-- end
-	-- 
-	-- camera:setPosition(0,0)
-	--     camera:move(xc*32,yc*32)
+	
+--	camera:setPosition(0,0)
+--	    camera:moveLoc(xc*32,yc*32)
 end
 
 function boulderdash:ReplaceAll(find, replace)
@@ -213,6 +206,7 @@ function boulderdash:startOver()
 	layer:clear()
 	print("startOver")
 	menu.cave_index = menu.cave_index - 1
+
 	boulderdash:LevelUp()
 end
 
@@ -238,7 +232,7 @@ function boulderdash:update(dt)
 		-- end
 		-- 
 		-- amoebas:update(delay_dt)
-		-- scoreboard:update(dt)
+		scoreboard:update(dt)
 		-- menu:update(dt)
 		
 		delay_dt = 0		

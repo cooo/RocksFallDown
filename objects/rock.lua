@@ -13,7 +13,7 @@ function rock:update(dt)
   	self:fall()
 	
 	local x,y = self:getPos()
-	rock.prop:setLoc ( x*32 - (STAGE_WIDTH/2), -y*32 + (STAGE_HEIGHT/2) )
+	rock.prop:setLoc ( Moai:x_and_y(x,y) )
 end
 
 -- only 1 out of 8 tries leads to a push

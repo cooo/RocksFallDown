@@ -23,7 +23,7 @@ function explode:load( x, y )
 
 	explode.prop = MOAIProp2D.new ()
 	explode.prop:setDeck ( tileDeck )
-	explode.prop:setLoc ( x*32 - (STAGE_WIDTH/2), -y*32 + (STAGE_HEIGHT/2) )
+	explode.prop:setLoc ( Moai:x_and_y(x,y) )
 	
 	local curve = MOAIAnimCurve.new ()
 
