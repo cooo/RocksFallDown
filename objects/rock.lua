@@ -6,7 +6,7 @@ rock.falling = false
 
 function rock:load( x, y )
 	local quad = Moai:cachedTexture(boulderdash.imgpath .. "rock.png", rock.width, rock.height)
-	self.prop  = Moai:createProp(quad, x, y)
+	self.prop  = Moai:createProp(layer, quad, x, y)
 end
 
 function rock:update(dt)

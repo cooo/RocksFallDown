@@ -182,28 +182,28 @@ end
 -- move him around or grab something
 function rockford:move(dt)
 	if delay_dt > local_delay then
-
-		-- up,down=q (113),a (97), left,right=o (111), p (112)
-		if (self.key==113 or self.key==357) then
-			rockford:UpOrDown(-1)
-		elseif (self.key==97 or self.key==359) then
-			rockford:UpOrDown(1)
-		elseif (self.key==111 or self.key==356) then
-			rockford:LeftOrRight(-1)
-		elseif (self.key==112 or self.key==358) then
-			rockford:LeftOrRight(1)
-		end
+		if not boulderdash.dead then
+			-- up,down=q (113),a (97), left,right=o (111), p (112)
+			if (self.key==113 or self.key==357) then
+				rockford:UpOrDown(-1)
+			elseif (self.key==97 or self.key==359) then
+				rockford:UpOrDown(1)
+			elseif (self.key==111 or self.key==356) then
+				rockford:LeftOrRight(-1)
+			elseif (self.key==112 or self.key==358) then
+				rockford:LeftOrRight(1)
+			end
 		
-		if (input.touching == "left") then
-			rockford:LeftOrRight(-1)
-		elseif (input.touching == "right") then
-			rockford:LeftOrRight(1)
-		elseif (input.touching == "up") then
-			rockford:UpOrDown(-1)
-		elseif (input.touching == "down") then
-			rockford:UpOrDown(1)
+			if (input.touching == "left") then
+				rockford:LeftOrRight(-1)
+			elseif (input.touching == "right") then
+				rockford:LeftOrRight(1)
+			elseif (input.touching == "up") then
+				rockford:UpOrDown(-1)
+			elseif (input.touching == "down") then
+				rockford:UpOrDown(1)
+			end
 		end
-	
 		delay_dt = 0		
     end
 	delay_dt = delay_dt + dt
@@ -231,33 +231,40 @@ end
 function rockford:he_might_die()
 	local xr,yr = self:getPos()
 	
+	self:time_is_up()
 	self:dies_from_things_falling_on_his_head(xr, yr)
 --	self:dead_from_being_close_to_deadly_critters(xr, yr)
 end
 
+function rockford:dies()
+	scoreboard.one_second_timer:stop()
+	boulderdash.dead = true -- to prevent starting the explode sequence again
+	self.restless_timer:stop()
+	self.currentAnimation = nil
+	boulderdash:explode(self.id)
+end
+
+function rockford:time_is_up()
+	if type(scoreboard.clock)=="number" and scoreboard.clock <= 0 then
+		rockford:dies()
+	end
+end
 
 function rockford:dies_from_things_falling_on_his_head(xr, yr)
 	local object = boulderdash:find(xr,yr-1)
 
 	if (object.falling and not boulderdash.done) then
-		print("game over")
-		 self.restless_timer:stop()
-		self.currentAnimation = nil
-		boulderdash:explode(self.id)
-		
+		rockford:dies()
 	end
 end
-
 
 function rockford:dead_from_being_close_to_deadly_critters(xr, yr)
 	for i,direction in ipairs(directions) do
 		if (rockford:deadly_critter_at(direction) and not boulderdash.done) then
-			boulderdash.dead = true
+			rockford:dies()
 		end
 	end
 end
-
-
 
 function rockford:LeftOrRight(x)
 	print(self.id, x)

@@ -1,12 +1,10 @@
 scoreboard = {}
-scoreboard.countdown = nil
-scoreboard.one_second_timer = 0
-scoreboard.one_second = 1
+scoreboard.one_second_timer = nil
+scoreboard.clock = 0
 scoreboard.diamonds_to_get = 0
 scoreboard.diamonds_are_worth = 0
 scoreboard.extra_diamonds_are_worth = 0
 scoreboard.score = 0
-scoreboard.numbers_white_img = nil -- move this to a numbers.lua
 scoreboard.number_lua = nil
 scoreboard.matrix = {}
 
@@ -18,31 +16,21 @@ function scoreboard:createScoreboard(viewport)
 	return scoreboard_layer
 end
 
+function scoreboard:countdown()
+	scoreboard.clock = scoreboard.clock - 1
+end
 
 function scoreboard:load()
-	self.countdown                = level_loader.games[menu.game_index].caves[menu.cave_index].time
+	self.clock	                  = level_loader.games[menu.game_index].caves[menu.cave_index].time
 	self.diamonds_to_get          = level_loader.games[menu.game_index].caves[menu.cave_index].diamonds_to_get
 	self.diamonds_are_worth       = level_loader.games[menu.game_index].caves[menu.cave_index].diamonds_are_worth
 	self.extra_diamonds_are_worth = level_loader.games[menu.game_index].caves[menu.cave_index].extra_diamonds_are_worth
---	self.one_second_timer         = reset_time()
+	self.one_second_timer         = Moai:createLoopTimer(1.0, scoreboard.countdown)
 		
 	scoreboard.number_lua = loadfile( boulderdash.objpath .. "number.lua" )
 	scoreboard:diamonds()
-	
---	scoreboard.screen_width = love.graphics.getWidth()
 end
 
--- finds a digit on the scoreboard and change it to i, create it if not found
-function scoreboard:find_or_create(name, x, y, i)
-	if scoreboard.matrix[id( x,y )] then
-		local number = scoreboard.matrix[id( x,y )]
-		number:setPos( x, y )
-		number:set_index( i )
-		number.id = id( x,y )
-	else
-		scoreboard.Create( name, x, y, i )
-	end
-end
 
 function scoreboard.Create(name, x, y, i)
 	x = x or 0
@@ -58,14 +46,9 @@ end
 
 
 function scoreboard:update(dt)
+
 	-- if (since(self.one_second_timer) > self.one_second) then
-	-- 	self.countdown = self.countdown - 1
-	-- 	if (self.countdown <= 0) then
-	-- 		-- explode too?
-	-- 		self.countdown = 0
-	-- 		boulderdash.dead = true -- to prevent starting the explode sequence again
-	-- 	end
-	-- 
+	--  move the tingly wall stuff elsewhere
 	-- 	if boulderdash:magic_wall_tingles() then
 	-- 		boulderdash.magictime = boulderdash.magictime - 1
 	-- 
@@ -77,54 +60,48 @@ function scoreboard:update(dt)
 	-- 	self.one_second_timer = reset_time()
 	-- end
 	scoreboard:diamonds()
+	-- update the matrix
+	for i, digit in pairs(self.matrix) do
+		digit:update()
+	end
+	
 	-- if boulderdash:magic_wall_tingles() then
 	-- 	audio:play("twinkly_magic_wall", true)
 	-- end
 end
 
-function scoreboard:draw_on_board(str, x)
+-- finds a digit on the scoreboard and change it to i, create it if not found
+local function find_or_create(name, x, y, i)
+	if scoreboard.matrix[id( x,y )] then
+		local number = scoreboard.matrix[id( x,y )]
+		number:set_index( i )
+	else
+		scoreboard.Create( name, x, y, i )
+	end
+end
+
+local function draw_on_board(str, x)
 	
 	if (x>=0) then
 		local board_to_get = {}
 		string.gsub(str, "(.)", function(x) table.insert(board_to_get, x) end)
 		
 		for i, digit in pairs(board_to_get) do
-			scoreboard:find_or_create( "number", x+i, 0, digit )
+			find_or_create( "number", x+i, 0, digit )
 		end
 	end
 end
 
-
 function scoreboard:diamonds()
-		
-	scoreboard:draw_on_board(string.rjust(self.diamonds_to_get,    2, "0"),  0)
-	scoreboard:draw_on_board(string.rjust(self.diamonds_are_worth, 2, "0"),  3)
-	scoreboard:draw_on_board(string.rjust(boulderdash.diamonds,    2, "0"),  6)
-	scoreboard:draw_on_board(string.rjust(self.countdown,          3, "0"),  9)
-	scoreboard:draw_on_board(string.rjust(self.score,              6, "0"), 13) -- format with 6 positions
-	
+	draw_on_board(string.rjust(self.diamonds_to_get,    2, "0"),  0)
+	draw_on_board(string.rjust(self.diamonds_are_worth, 2, "0"),  3)
+	draw_on_board(string.rjust(boulderdash.diamonds,    2, "0"),  6)
+	draw_on_board(string.rjust(self.clock,		        3, "0"),  9)
+	draw_on_board(string.rjust(self.score,              6, "0"), 13) -- format with 6 positions
 end
 
-function scoreboard:draw()
 
-	-- love.graphics.setColor(0,0,0)
-	-- love.graphics.rectangle("fill", 0, 0, scoreboard.screen_width, 32 )
-	-- 
-	-- -- draw the matrix
-	-- for i, object in pairs(self.matrix) do
-	-- 	object:draw()
-	-- end
-	-- 
-	-- -- draw a scoreboard on top
-	-- -- 
-	-- love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 750, 10)
 
-	-- if (boulderdash.diamonds >= self.diamonds_to_get) then
-	-- 	if not boulderdash.flash then
-	-- 		audio:play("twang")
-	-- 		love.graphics.setBackgroundColor(255,255,255)
-	-- 		boulderdash.flash=true
-	-- 	end
-	-- end
-		
-end
+
+
+

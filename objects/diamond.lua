@@ -5,21 +5,9 @@ diamond.images = {}
 diamond.strip = 8
 
 function diamond:load( x, y )
-	-- self:setImage(love.graphics.newImage( boulderdash.imgpath .. "diamonds_32.png"))
-	-- for i=0, 32*(8-1), 32 do
-	-- 	table.insert( self.images, love.graphics.newQuad(i, 0, 32, 32, 32*8, 32) )
-	-- end
-	-- self:setPos( x, y )
 
-	local tileDeck = MOAITileDeck2D.new ()
-	tileDeck:setTexture ( boulderdash.imgpath .. "diamonds_32.png" )
-	tileDeck:setSize ( diamond.strip, 1 )	-- width, height
-	tileDeck:setRect ( 0, 0, 32, 32 )
-
-
-	diamond.prop = MOAIProp2D.new ()
-	diamond.prop:setDeck ( tileDeck )
-	diamond.prop:setLoc ( Moai:x_and_y(x,y) )
+	local tileDeck = Moai:cachedTileDeck(boulderdash.imgpath .. "diamonds_32.png", diamond.strip, 1)
+	diamond.prop  = Moai:createProp(layer, tileDeck, x, y)	
 	
 	local curve = MOAIAnimCurve.new ()
 
@@ -33,8 +21,7 @@ function diamond:load( x, y )
 	anim:setLink ( 1, curve, diamond.prop, MOAIProp2D.ATTR_INDEX )
 	anim:setMode ( MOAITimer.LOOP )
 	anim:start ()
-	layer:insertProp(self.prop)
-	
+
 end
 
 function diamond:update(dt)

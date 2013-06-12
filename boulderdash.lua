@@ -86,7 +86,7 @@ function boulderdash:LevelUp()
 	-- 
 	-- self.done = false
 	-- boulderdash.flash = false
-	-- boulderdash.dead = false
+	boulderdash.dead = false
 	-- boulderdash.died = false
 	-- boulderdash.start_over = false
 	boulderdash.diamonds = 0
@@ -215,7 +215,7 @@ function boulderdash:update(dt)
 	if delay_dt > delay then
 
 		-- amoebas.grow_directions = {}
-		local j,h=0,0
+
 		for i, object in pairs(boulderdash.objects) do
 			if object.update then
 				if not object.moved then
@@ -224,8 +224,14 @@ function boulderdash:update(dt)
 				end	
 			end
 		end
---		print(j,h)
 
+--		if (boulderdash.diamonds >= self.diamonds_to_get) then
+		-- 	if not boulderdash.flash then
+		-- 		audio:play("twang")
+		-- 		love.graphics.setBackgroundColor(255,255,255)
+		-- 		boulderdash.flash=true
+		-- 	end
+--		end
 		
 		-- if boulderdash.flash then
 		-- 	love.graphics.setBackgroundColor(0,0,0)
@@ -252,19 +258,14 @@ function boulderdash:default()
 end
 
 function boulderdash:draw()
---	layer:clear()
---	camera:set()
-		for i, object in pairs(boulderdash.objects) do
-			if object.draw then
-				object:draw()
-				object.moved = false
-			end
+	for i, object in pairs(boulderdash.objects) do
+		if object.draw then
+			object:draw()
+			object.moved = false
 		end
--- --	camera:unset()
+	end
 	
---	scoreboard:draw()
 --	menu:draw()
---	love.graphics.print("FPS: "..tostring(love.timer.getFPS( )), 750, 10)
 		
 end
 

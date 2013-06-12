@@ -4,7 +4,7 @@ wall.rounded = true
 
 function wall:load( x, y )
 	local quad = Moai:cachedTexture(boulderdash.imgpath .. "wall.png", wall.width, wall.height)
-	self.prop  = Moai:createProp(quad, x, y)
+	self.prop  = Moai:createProp(layer, quad, x, y)
 end
 
 return wall

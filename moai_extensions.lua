@@ -11,19 +11,29 @@ function Moai:cachedTexture( name, width, height )
 	return textureCache[ name ]
 end
 
+function Moai:cachedTileDeck( name, strip_width, strip_height)
+	if textureCache[name] == nil then
+		textureCache[name] = MOAITileDeck2D.new ()
+		textureCache[name]:setTexture ( name )
+		textureCache[name]:setSize ( strip_width, strip_height )	-- width, height
+		textureCache[name]:setRect ( 0, 0, 32, 32 )
+	end
+	return textureCache[name]
+end
+
 function Moai:x_and_y(x,y)
 	return x*32 - (STAGE_WIDTH/2), -y*32 + (STAGE_HEIGHT/2) - 32
 end
 
-function Moai:createProp(quad, x, y)
+function Moai:createProp(this_layer, quad, x, y)
 	local prop = MOAIProp2D.new()
 	prop:setDeck( quad )
 	prop:setLoc( Moai:x_and_y(x,y) )
-	layer:insertProp(prop)
+	this_layer:insertProp(prop)
 	return prop
 end
 
-
+-- starts a timer and calls 'callbackFunction' every spanTime
 function Moai:createLoopTimer ( spanTime, callbackFunction )
 	local timer = MOAITimer.new ()
 	timer:setSpan( spanTime )
