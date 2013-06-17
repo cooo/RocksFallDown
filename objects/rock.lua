@@ -17,13 +17,13 @@ function rock:update(dt)
 end
 
 -- only 1 out of 8 tries leads to a push
--- function rock:push(x)
--- 	local xr,yr = self:getPos()
--- 	local one = math.random(1,8)
--- 	if ((one==1) and (boulderdash:find(xr+x,yr).type=="space")) then
--- 		self:doMove( x, 0 )
--- 	end
--- end
+function rock:push(x)
+	local xr,yr = self:getPos()
+	local one = math.random(1,8)
+	if ((one==1) and (boulderdash:find(xr+x,yr).type=="space")) then
+		self:doMove( x, 0 )
+	end
+end
 
 
 return rock

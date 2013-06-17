@@ -95,9 +95,9 @@ end
 function scoreboard:diamonds()
 	draw_on_board(string.rjust(self.diamonds_to_get,    2, "0"),  0)
 	draw_on_board(string.rjust(self.diamonds_are_worth, 2, "0"),  3)
-	draw_on_board(string.rjust(boulderdash.diamonds,    2, "0"),  6)
-	draw_on_board(string.rjust(self.clock,		        3, "0"),  9)
-	draw_on_board(string.rjust(self.score,              6, "0"), 13) -- format with 6 positions
+	draw_on_board(string.rjust(boulderdash.diamonds,    2, "0"),  8)
+	draw_on_board(string.rjust(self.clock,		        3, "0"), 13)
+	draw_on_board(string.rjust(self.score,              6, "0"), 17) -- format with 6 positions
 end
 
 

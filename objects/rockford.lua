@@ -181,7 +181,7 @@ end
 
 -- move him around or grab something
 function rockford:move(dt)
-	if delay_dt > local_delay then
+--	if delay_dt > local_delay then
 		if not boulderdash.dead then
 			-- up,down=q (113),a (97), left,right=o (111), p (112)
 			if (self.key==113 or self.key==357) then
@@ -205,8 +205,8 @@ function rockford:move(dt)
 			end
 		end
 		delay_dt = 0		
-    end
-	delay_dt = delay_dt + dt
+  --  end
+--	delay_dt = delay_dt + dt
 	
 	
 	
@@ -267,7 +267,7 @@ function rockford:dead_from_being_close_to_deadly_critters(xr, yr)
 end
 
 function rockford:LeftOrRight(x)
-	print(self.id, x)
+
 	table.remove(boulderdash.keypressed, 1)
 	if self:canMove( x, 0 ) then
 		if self.grab then
@@ -307,9 +307,6 @@ function rockford:canMove(x,y)
 		end
 		return false
 	end
---	idle_time = love.timer.getMicroTime()	-- the start of idle time
-
-
 
 	return rockford:consume(object)
 end

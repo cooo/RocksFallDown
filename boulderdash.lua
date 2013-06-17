@@ -18,7 +18,7 @@ boulderdash.keypressed = {}
 
 local register = {}
 
-delay = 1/FRAMES
+delay = 0.1
 delay_dt = 0
 
 function id(x,y)
@@ -221,7 +221,7 @@ function boulderdash:update(dt)
 				if not object.moved then
 					object:update(dt)
 					object.moved = true
-				end	
+				end
 			end
 		end
 

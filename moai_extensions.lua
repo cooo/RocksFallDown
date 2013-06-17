@@ -29,6 +29,7 @@ function Moai:createProp(this_layer, quad, x, y)
 	local prop = MOAIProp2D.new()
 	prop:setDeck( quad )
 	prop:setLoc( Moai:x_and_y(x,y) )
+
 	this_layer:insertProp(prop)
 	return prop
 end
