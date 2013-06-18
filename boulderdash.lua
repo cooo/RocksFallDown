@@ -11,7 +11,6 @@ boulderdash.imgpath   = "images/"
 boulderdash.diamonds = 0
 boulderdash.done = false
 boulderdash.dead = false
-boulderdash.died = false
 boulderdash.start_over = false
 boulderdash.flash = false
 boulderdash.keypressed = {}
@@ -66,6 +65,7 @@ end
 
 
 function boulderdash:LevelUp()
+	layer:clear()
 	self.objects = {}
 	local xc,yc = camera:getLoc()
 	camera:moveLoc(-xc, -yc, 2.0) 
@@ -84,7 +84,7 @@ function boulderdash:LevelUp()
 
 	-- local xc,yc = boulderdash:Replace("rockford", "entrance")
 	-- 
-	-- self.done = false
+	boulderdash.done = false
 	-- boulderdash.flash = false
 	boulderdash.dead = false
 	-- boulderdash.died = false
@@ -96,7 +96,7 @@ function boulderdash:LevelUp()
 	-- boulderdash.keypressed = {}
 	-- amoebas:init(tonumber(level_loader.games[menu.game_index].caves[menu.cave_index].amoebatime))
 	-- 
-	-- delay = 0.1
+	delay = 0.1
 	scoreboard:load()
 	-- 
 	-- if (xc<11)then
@@ -203,7 +203,7 @@ function boulderdash:canExplode(x,y, explode_to, master)
 end
 
 function boulderdash:startOver()
-	layer:clear()
+	
 	print("startOver")
 	menu.cave_index = menu.cave_index - 1
 
@@ -224,6 +224,14 @@ function boulderdash:update(dt)
 				end
 			end
 		end
+		
+		if boulderdash.done then
+			-- audio:stop("twinkly_magic_wall")
+			MOAIInputMgr.device.keyboard:setCallback(nil)
+			scoreboard.one_second_timer:stop() -- let it run out through the gameloop timer
+			delay = 0		
+		end
+		
 
 --		if (boulderdash.diamonds >= self.diamonds_to_get) then
 		-- 	if not boulderdash.flash then

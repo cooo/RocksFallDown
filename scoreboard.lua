@@ -46,20 +46,18 @@ end
 
 
 function scoreboard:update(dt)
+	
+	if boulderdash.done then
+		scoreboard.countdown()
+		scoreboard.score = scoreboard.score + 1
+		if scoreboard.clock <= 0 then
+			scoreboard.clock = 0
+			boulderdash:LevelUp()
+		end
+	end
 
-	-- if (since(self.one_second_timer) > self.one_second) then
-	--  move the tingly wall stuff elsewhere
-	-- 	if boulderdash:magic_wall_tingles() then
-	-- 		boulderdash.magictime = boulderdash.magictime - 1
-	-- 
-	-- 		if (boulderdash.magictime <= 0) then
-	-- 			boulderdash.magicwall_expired = true
-	-- 			audio:stop("twinkly_magic_wall")
-	-- 		end
-	-- 	end
-	-- 	self.one_second_timer = reset_time()
-	-- end
 	scoreboard:diamonds()
+
 	-- update the matrix
 	for i, digit in pairs(self.matrix) do
 		digit:update()

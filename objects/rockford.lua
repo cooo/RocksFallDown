@@ -182,7 +182,8 @@ end
 -- move him around or grab something
 function rockford:move(dt)
 --	if delay_dt > local_delay then
-		if not boulderdash.dead then
+		if not (boulderdash.dead or boulderdash.done) then
+
 			-- up,down=q (113),a (97), left,right=o (111), p (112)
 			if (self.key==113 or self.key==357) then
 				rockford:UpOrDown(-1)
@@ -193,7 +194,7 @@ function rockford:move(dt)
 			elseif (self.key==112 or self.key==358) then
 				rockford:LeftOrRight(1)
 			end
-		
+	
 			if (input.touching == "left") then
 				rockford:LeftOrRight(-1)
 			elseif (input.touching == "right") then
@@ -203,6 +204,7 @@ function rockford:move(dt)
 			elseif (input.touching == "down") then
 				rockford:UpOrDown(1)
 			end
+
 		end
 		delay_dt = 0		
   --  end
@@ -237,11 +239,13 @@ function rockford:he_might_die()
 end
 
 function rockford:dies()
-	scoreboard.one_second_timer:stop()
-	boulderdash.dead = true -- to prevent starting the explode sequence again
-	self.restless_timer:stop()
-	self.currentAnimation = nil
-	boulderdash:explode(self.id)
+	if not boulderdash.done then		-- unless the level was finished
+		scoreboard.one_second_timer:stop()
+		boulderdash.dead = true -- to prevent starting the explode sequence again
+		self.restless_timer:stop()
+		self.currentAnimation = nil
+		boulderdash:explode(self.id)
+	end
 end
 
 function rockford:time_is_up()
@@ -253,14 +257,14 @@ end
 function rockford:dies_from_things_falling_on_his_head(xr, yr)
 	local object = boulderdash:find(xr,yr-1)
 
-	if (object.falling and not boulderdash.done) then
+	if (object.falling) then
 		rockford:dies()
 	end
 end
 
 function rockford:dead_from_being_close_to_deadly_critters(xr, yr)
 	for i,direction in ipairs(directions) do
-		if (rockford:deadly_critter_at(direction) and not boulderdash.done) then
+		if rockford:deadly_critter_at(direction) then
 			rockford:dies()
 		end
 	end
