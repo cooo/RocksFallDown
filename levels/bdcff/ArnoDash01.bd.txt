@@ -17,7 +17,7 @@ Caves=20
 [cave]
 Name=Cave 1
 CaveDelay=8
-CaveTime=20
+CaveTime=120
 DiamondsRequired=18
 DiamondValue=15 20
 Colors=Black Black Gray1 LightGreen Yellow

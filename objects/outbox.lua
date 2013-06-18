@@ -1,49 +1,43 @@
 local outbox = boulderdash.Derive("base")
 outbox.hard = true
-outbox.flash_image = nil
 outbox.flash_delay = 0.15
-outbox.flash_timer = 0
+outbox.strip = 4
 
-function outbox:setFlashImage(img)
-	self.flash_image = img
-end
-
+-- the outbox looks like steel, until enough diamonds are collected,
+-- then the outbox flashes with the outbox bitmap
 function outbox:load( x, y )
-	self:setImage(     love.graphics.newImage( boulderdash.imgpath .. "steel.png" ))
-	self:setFlashImage(love.graphics.newImage( boulderdash.imgpath .. "outbox.png"))
-	self:setPos ( x, y )
-end
+	local tileDeck = Moai:cachedTileDeck(boulderdash.imgpath .. "outbox.png", outbox.strip, 1)
+	outbox.prop  = Moai:createProp(layer, tileDeck, x, y)	
 
-
-function outbox:update(dt)
-	if not outbox.hard then
-		if (since(outbox.flash_timer) > outbox.flash_delay) then
-			self.flash_image, self.img = self.img, self.flash_image -- lua's swap trick without temp
-			outbox.flash_timer = reset_time()
-		end
+	local curve = MOAIAnimCurve.new ()
+	curve:reserveKeys ( outbox.strip )
+	for i=1, outbox.strip do
+		curve:setKey ( i, (i-1)*outbox.flash_delay, i, MOAIEaseType.FLAT )
 	end
+
+	outbox.anim = MOAIAnim:new ()
+	outbox.anim:reserveLinks ( 1 )
+	outbox.anim:setLink ( 1, curve, outbox.prop, MOAIProp2D.ATTR_INDEX )
+	outbox.anim:setMode ( MOAITimer.LOOP )
 end
 
 function outbox:consume()
 	if not outbox.hard then
-		boulderdash:ReplaceByID(id(1,1), "leaving")	-- TODO: find a better way to do this
 		boulderdash.setDone()
+		outbox.anim:stop()
+		outbox:remove()
 		return true
 	else
 		return false
 	end
 end
 
-function outbox:draw()	
+function outbox:update(dt)	
 	-- animation of the outbox starts now	
 	if (boulderdash.diamonds >= level_loader.games[menu.game_index].caves[menu.cave_index].diamonds_to_get) then
-		outbox.hard = false
+		outbox.hard = false -- so rockford can enter
+		outbox.anim:start ()
 	end
-
-	-- no super in lua, so just do it again
-	local x, y = self:getPos()	
-	local img = self:getImage()
-	love.graphics.draw(img, x*self.scale, y*self.scale, 0, 2, 2)
 end
 
 return outbox
