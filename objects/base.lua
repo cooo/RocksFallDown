@@ -57,6 +57,7 @@ function base:doMove(x,y)
 	base.id = id( base:getPos() )
 	boulderdash.objects[base.id] = base
 	base.moved = true
+	base.prop:setLoc (Moai:x_and_y(xr+x, yr+y) )
 
 	local space = boulderdash.Create( "space", xr, yr )
 	boulderdash.objects[space.id] = space

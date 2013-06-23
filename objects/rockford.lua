@@ -8,6 +8,7 @@ rockford.strip = 1
 rockford.grab = false
 rockford.key = nil
 rockford.restless_timer = nil
+rockford.smooth_scrolling = { x=0, y=0 }
 rockford.config_animations = {
 	entrance = {
 		offset = 1,
@@ -319,25 +320,25 @@ function rockford:doMoveRockford(x,y)
 
 	local xr,yr = self:getPos()
 	self:doMove(x,y)
-	-- xr -> xxr
-	-- 10 -> 11 no move
-	-- 11 -> 10 no move
-	-- 11 -> 12 move camera
-	-- 12 -> 11 move camera
 	
-
 	if ((xr+x>10 and xr>10) and (xr<27 and xr+x<27)) then
-		camera:moveLoc ( x*self.scale, 0, 0.5 )
+		rockford.smooth_scrolling.x = rockford.smooth_scrolling.x + x
 	end
 
 	if ((yr>10 and yr+y>10) and (yr+y<19 and yr<19)) then
-		camera:moveLoc(0, -y*self.scale, 0.5)
+		rockford.smooth_scrolling.y = rockford.smooth_scrolling.y + y
 	end
 	
-	-- if ((yr>7 and yr+y>7) and (yr<13 and yr+y<13)) then
-	-- 	camera:moveLoc(0, -y*self.scale, 0.25)
-	-- end
+	if (rockford.smooth_scrolling.x > 4) or (rockford.smooth_scrolling.x < -4) then
+		camera:moveLoc ( rockford.smooth_scrolling.x*self.scale, 0, 1.0 )
+		rockford.smooth_scrolling.x = 0
+	end
 	
+	if (rockford.smooth_scrolling.y > 2) or (rockford.smooth_scrolling.y < -2) then
+		camera:moveLoc(0, -rockford.smooth_scrolling.y*self.scale, 1.0)
+		rockford.smooth_scrolling.y = 0
+	end
+		
 end
 
 function rockford:doGrabRockford(x,y)
