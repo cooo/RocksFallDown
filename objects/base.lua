@@ -7,9 +7,11 @@ base.type = nil
 base.rounded = false
 base.hard = false
 base.moved = false
-base.explodes = true
+base.can_explode = false -- when something fall on top
+base.explodes = true     -- explodes when something next to it explodes
 base.debug = false
 base.scale = 32
+base.callback = nil
 
 
 base.width  = 32
@@ -79,21 +81,38 @@ local function swap(base, x,y)
 	boulderdash.objects[base.id] = base
 end
 
+function base:explode(callback)	
+	local directions = { {x=1,y=0}, {x=-1,y=0}, {x=1,y=-1}, {x=0,y=-1}, {x=-1,y=-1}, {x=1,y=1}, {x=0,y=1}, {x=-1,y=1} }
+	for i,d in ipairs(directions) do	
+		local object = boulderdash:find(self.x+d.x, self.y+d.y)
+		if object.explodes then
+			object:remove()
+			boulderdash.Create( "explode", base.x+d.x, base.y+d.y)  -- no callback
+		end
+	end
+	x,y = base.x, base.y
+	base:remove()
+	boulderdash.Create( "explode", x, y, callback)	-- the center of the explosion
+end
+
 function base:fall()
 	local x,y = base:getPos()
+	
+	local object_under = boulderdash:find(x,y+1)
 
 	-- fall straight down
-	if (boulderdash:find(x,y+1).type == "space") then
+	if (object_under.type == "space") then
 		swap(base, x, y+1)
 	-- fall of rounded object (to the left)
-	elseif (boulderdash:find(x,y+1).rounded and boulderdash:find(x-1,y).type=="space" and boulderdash:find(x-1,y+1).type=="space") then
+	elseif (object_under.rounded and boulderdash:find(x-1,y).type=="space" and boulderdash:find(x-1,y+1).type=="space") then
 		swap(base, x-1, y+1)	
 	-- fall of rounded object (to the right)
-	elseif (boulderdash:find(x,y+1).rounded and boulderdash:find(x+1,y).type=="space" and boulderdash:find(x+1,y+1).type=="space") then
+	elseif (object_under.rounded and boulderdash:find(x+1,y).type=="space" and boulderdash:find(x+1,y+1).type=="space") then
 		swap(base, x+1, y+1)
-	elseif (boulderdash:find(x,y+1).explode ) then
-		boulderdash:explode(id(x,y+1))
-	elseif (boulderdash:find(x,y+1).hard and not (boulderdash:find(x,y+1).type=="magic_wall") ) then
+	elseif (object_under.can_explode ) then
+		object_under:explode()
+		
+	elseif (object_under.hard and not (object_under.type=="magic_wall") ) then
 		if base.falling then
 			audio:play("rock_fall")
 	    	base.falling = false

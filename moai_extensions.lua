@@ -34,6 +34,21 @@ function Moai:createProp(this_layer, quad, x, y)
 	return prop
 end
 
+function Moai:createAnimation(number_of_frames, prop)
+	local curve = MOAIAnimCurve.new ()
+	curve:reserveKeys ( number_of_frames )
+	for i=1, number_of_frames do
+		curve:setKey ( i, (i-1)/number_of_frames, i, MOAIEaseType.FLAT )
+	end
+
+	local anim = MOAIAnim:new ()
+	anim:reserveLinks ( 1 )
+	anim:setLink ( 1, curve, prop, MOAIProp2D.ATTR_INDEX )
+	anim:setMode ( MOAITimer.LOOP )
+	anim:start ()
+	return anim
+end
+
 -- starts a timer and calls 'callbackFunction' every spanTime
 function Moai:createLoopTimer ( spanTime, callbackFunction )
 	local timer = MOAITimer.new ()

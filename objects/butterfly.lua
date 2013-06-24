@@ -1,53 +1,22 @@
-local butterfly = boulderdash.Derive("base")
-local faces = { "left", "up", "right", "down" }
-local directions = { {x=-1,y=0}, {x=0,y=-1}, {x=1,y=0}, {x=0,y=1} }
-local orientation = 1
-butterfly.explode = true	-- can create an explosion
+local butterfly               = boulderdash.Derive("base")
+local faces                   = { "left", "up", "right", "down" }
+local directions              = { {x=-1,y=0}, {x=0,y=-1}, {x=1,y=0}, {x=0,y=1} }
+local orientation             = 1
+butterfly.can_explode         = true	-- can create an explosion
 butterfly.explode_to_diamonds = true 
-butterfly.rounded = true
-butterfly.deadly  = true
-butterfly.images = {}
-butterfly.sprite_index = 1
-butterfly.flash_delay = 0.02
-butterfly.flash_timer = 0
-butterfly.facing = faces[orientation]
-
-
-function butterfly:rotateRight()
-	orientation = orientation + 1
-	if (orientation > 4) then orientation = 1 end
-	butterfly.facing = faces[orientation]
-end
-
-function butterfly:rotateLeft()
-	orientation = orientation - 1
-	if (orientation < 1) then orientation = 4 end
-	butterfly.facing = faces[orientation]
-end
+butterfly.rounded             = true
+butterfly.deadly              = true
+butterfly.facing              = faces[orientation]
+butterfly.strip               = 8
 
 function butterfly:load( x, y )
-	self:setImage(love.graphics.newImage( boulderdash.imgpath .. "butterfly.png"))
-	for i=0, 32*(8-1), 32 do
-		table.insert( self.images, love.graphics.newQuad(i, 0, 32, 32, 32*8, 32) )
-	end
-	self:setPos( x, y )
+	local tileDeck = Moai:cachedTileDeck(boulderdash.imgpath .. "butterfly.png", butterfly.strip, 1)
+	butterfly.prop  = Moai:createProp(layer, tileDeck, x, y)	
+	Moai:createAnimation(butterfly.strip, butterfly.prop)	
 end
 
 function butterfly:update(dt)
 	self:move(dt)
---	if (since(self.flash_timer) > self.flash_delay) then
-		self.sprite_index = self.sprite_index + 1
-		self.flash_timer = reset_time()
-		if (self.sprite_index == 9) then
-			self.sprite_index = 1
-		end
---	end
-end
-
-function butterfly:draw()
-	local x, y = self:getPos()	
-	local img  = self:getImage()
-	love.graphics.drawq(img, self.images[self.sprite_index or 1], x*self.scale, y*self.scale)
 end
 
 function butterfly:space_is_empty_to_the(direction)
@@ -60,6 +29,18 @@ end
 
 function butterfly:space_is_empty(facing, d)
 	return (self.facing==facing) and (boulderdash:find(self.x+d.x, self.y+d.y).type == "space")
+end
+
+function butterfly:rotateRight()
+	orientation = orientation + 1
+	if (orientation > 4) then orientation = 1 end
+	butterfly.facing = faces[orientation]
+end
+
+function butterfly:rotateLeft()
+	orientation = orientation - 1
+	if (orientation < 1) then orientation = 4 end
+	butterfly.facing = faces[orientation]
 end
 
 function butterfly:move(dt)
@@ -78,7 +59,5 @@ function butterfly:move(dt)
 		self:rotateLeft()
 	end	
 end
-
-
 
 return butterfly

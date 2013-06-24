@@ -1,0 +1,51 @@
+[BDCFF]
+
+[game]
+Name=Boulderdash
+Date=September 1983
+Author=
+WWW=
+Charset=Original
+Fontset=Original
+Levels=1
+Caves=1
+
+
+[cave]
+Name=Cave 1
+CaveDelay=8
+CaveTime=120
+DiamondsRequired=18
+DiamondValue=15 20
+Colors=Black Black Gray1 LightGreen Yellow
+MagicWallTime=16
+
+[map]
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW 
+W.r..r..w.r...d.w... .r.wr......w..rr..W 
+W.......w......rwrr. ...w ..d...w....r.W 
+W                                      W 
+Wd......w.r....rw.r. .. w..r..d.w..r.r.W 
+W.......w.r....rw.r. r..w.....r.w... ..W 
+Wwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwwW 
+W....rr.w..r....w... ..rw....r..w.....rW 
+W.......w.. ....w... ...w....r. w.....rW 
+W                                      W 
+Wr..r...w....r..w..r ...w......dwr.....W 
+Wr....r.w..r..r.w... . rw.......wr...r.W 
+W.r.....w...r...w... . rw.......w r..r.W 
+Wwwwwwwwwwwwwwwwwwww wwwwwwwwwwwwwwwwwwW 
+Wr.  c..w....r.rw... ...w.rd..r.w......W 
+W.....r.wr......w..d ...w ..r...w.r.rr.W 
+W                                      W 
+Wd.. .r.wr....r.w.r. ..rw.r.r...w......W 
+W.....r.wr..d...w... r..w..r....w...rr W 
+W.d... rw..r....w.Xd r..w. .....w...rr W 
+W.rP... w.. ..r.w... ...w....r.rw.... .W 
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+[/map]
+[/cave]
+
+[/game]
+
+[/BDCFF]

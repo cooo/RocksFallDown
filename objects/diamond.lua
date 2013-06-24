@@ -8,20 +8,7 @@ function diamond:load( x, y )
 
 	local tileDeck = Moai:cachedTileDeck(boulderdash.imgpath .. "diamonds_32.png", diamond.strip, 1)
 	diamond.prop  = Moai:createProp(layer, tileDeck, x, y)	
-	
-	local curve = MOAIAnimCurve.new ()
-
-	curve:reserveKeys ( diamond.strip )
-	for i=1, diamond.strip do
-		curve:setKey ( i, (i-1)/diamond.strip, i, MOAIEaseType.FLAT )
-	end
-
-	local anim = MOAIAnim:new ()
-	anim:reserveLinks ( 1 )
-	anim:setLink ( 1, curve, diamond.prop, MOAIProp2D.ATTR_INDEX )
-	anim:setMode ( MOAITimer.LOOP )
-	anim:start ()
-
+	Moai:createAnimation(diamond.strip, diamond.prop)	
 end
 
 function diamond:update(dt)

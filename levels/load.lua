@@ -151,7 +151,7 @@ end
 
 function lookup(letter)
 	object = level_loader.object_map2[letter]
-	if object and (object=="dirt" or object=="rock" or object=="steel" or object=="wall" or object=="diamond" or object=="rockford" or object=="outbox") then
+	if object and (object=="dirt" or object=="rock" or object=="steel" or object=="wall" or object=="diamond" or object=="rockford" or object=="outbox" or object=="firefly" or object=="butterfly") then
 		return object
 	else
 		print("cannot find " .. letter)

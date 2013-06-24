@@ -45,6 +45,14 @@ function boulderdash:findByID(id)
 	return boulderdash.objects[id]
 end
 
+function boulderdash:findRockford()
+	for i, object in pairs(boulderdash.objects) do
+		if (object.type == "rockford") then
+			return object
+		end
+	end	
+end
+
 local function registerObjects()
 	-- register everything in the boulderdash.objpath folder
 	local files = MOAIFileSystem.listFiles( boulderdash.objpath )
@@ -81,8 +89,8 @@ function boulderdash:LevelUp()
 		end
 	end
 	
-
-	-- local xc,yc = boulderdash:Replace("rockford", "entrance")
+	local rf = boulderdash:findRockford()
+	local xc,yc = rf.x, rf.y
 	-- 
 	boulderdash.done = false
 	-- boulderdash.flash = false
@@ -99,21 +107,23 @@ function boulderdash:LevelUp()
 	delay = 0.1
 	scoreboard:load()
 	-- 
-	-- if (xc<11)then
-	-- 	xc = 0
-	-- elseif (xc>26) then
-	-- 	xc = 15
-	-- elseif ((yc>=11) and (yc<=26)) then
-	-- 	xc = xc - 11
-	-- end
-	-- 
-	-- if (yc<7)then
-	-- 	yc = 0
-	-- elseif (yc>=13) then
-	-- 	yc = 4
-	-- elseif ((yc>=7 and (yc<13))) then
-	-- 	yc = yc - 8
-	-- end
+	if (xc<10)then
+		xc = 0
+	elseif (xc>27) then
+		xc = 12
+	elseif ((yc>=10) and (yc<=27)) then
+		xc = xc - 9
+	end
+	
+	if (yc<10)then
+		yc = 0
+	elseif (yc>=19) then
+		yc = 6
+	elseif ((yc>=10 and (yc<19))) then
+		yc = yc - 11
+	end
+	
+	camera:moveLoc(xc*32, -yc*32, 2.0) 
 	
 --	camera:setPosition(0,0)
 --	    camera:moveLoc(xc*32,yc*32)
@@ -133,7 +143,7 @@ function boulderdash:ReplaceByID(id, replace)
 	return object.x, object.y
 end
 
-function boulderdash.Create(name, x, y, explode_to, master)
+function boulderdash.Create(name, x, y, callback)
 	x = x or 0
 	y = y or 0
 	if register[name] then
@@ -141,17 +151,8 @@ function boulderdash.Create(name, x, y, explode_to, master)
 		object:load(x,y)
 		object.type = name
 		object.id = id(x,y)
+		object.callback = callback
 		object:setPos(x,y)
-		if explode_to then
-			object.to = "diamond"
-		end
-		if master then
-			object.master = true
-		end
-		-- if boulderdash.objects[object.id] then
-		-- 	boulderdash.objects[object.id]={}
-		-- 	print("exists: ", object.type, object.id)
-		-- end
 		boulderdash.objects[object.id] = object
 		return object
 	else
@@ -163,6 +164,7 @@ function boulderdash:explode(find)
 	local object = boulderdash:findByID(find)
 	local explode_to = nil
 	local x, y = object.x, object.y
+	print("EXPLODE:", object.type)
 
 	-- if object and object.explode_to_diamonds then
 	-- 	-- usually butterflies

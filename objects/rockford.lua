@@ -236,7 +236,7 @@ function rockford:he_might_die()
 	
 	self:time_is_up()
 	self:dies_from_things_falling_on_his_head(xr, yr)
---	self:dead_from_being_close_to_deadly_critters(xr, yr)
+	self:dead_from_being_close_to_deadly_critters(xr, yr)
 end
 
 function rockford:dies()
@@ -245,7 +245,7 @@ function rockford:dies()
 		boulderdash.dead = true -- to prevent starting the explode sequence again
 		self.restless_timer:stop()
 		self.currentAnimation = nil
-		boulderdash:explode(self.id)
+		rockford:explode(boulderdash.startOver)
 	end
 end
 
