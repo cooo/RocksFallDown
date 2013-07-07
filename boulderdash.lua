@@ -93,7 +93,7 @@ function boulderdash:LevelUp()
 	local xc,yc = rf.x, rf.y
 	-- 
 	boulderdash.done = false
-	-- boulderdash.flash = false
+	boulderdash.flash = false
 	boulderdash.dead = false
 	-- boulderdash.died = false
 	-- boulderdash.start_over = false
@@ -160,50 +160,6 @@ function boulderdash.Create(name, x, y, callback)
 	end
 end
 
-function boulderdash:explode(find)
-	local object = boulderdash:findByID(find)
-	local explode_to = nil
-	local x, y = object.x, object.y
-	print("EXPLODE:", object.type)
-
-	-- if object and object.explode_to_diamonds then
-	-- 	-- usually butterflies
-	-- 	explode_to = "diamond"
-	-- 	object:remove()
-	-- 	x, y = boulderdash:ReplaceByID(find, "space")
-	-- elseif object then
-	-- 	-- usually rockford, might be a firefly
-	--     object:remove()
-	-- --	boulderdash.Create( "space", object.x, object.y )
-	-- 	x, y = object.x, object.y
-	-- 	if object.type=="rockford" then
-	-- 		boulderdash.dead = false -- to prevent starting the explode sequence again
-	-- 		boulderdash.died = true  -- to signal rockford just died
-	-- 	end
-	-- end
-	
---	audio:play("explosion")
-
-
-	boulderdash:canExplode( x+1, y  , object.explode_to_diamonds )
-	boulderdash:canExplode( x-1, y  , object.explode_to_diamonds )
-	boulderdash:canExplode( x+1, y-1, object.explode_to_diamonds )
-	boulderdash:canExplode( x  , y-1, object.explode_to_diamonds )
-	boulderdash:canExplode( x-1, y-1, object.explode_to_diamonds )
-	boulderdash:canExplode( x+1, y+1, object.explode_to_diamonds )
-	boulderdash:canExplode( x  , y+1, object.explode_to_diamonds )
-	boulderdash:canExplode( x-1, y+1, object.explode_to_diamonds )
-	boulderdash:canExplode( x  , y  , object.explode_to_diamonds, true )
-end
-
-function boulderdash:canExplode(x,y, explode_to, master)
-	local object = boulderdash:find(x,y)
-	if object.explodes then
-		object:remove()
-		boulderdash.Create( "explode", x, y, explode_to, master )  -- default is explode_to space
-	end
-end
-
 function boulderdash:startOver()
 	
 	print("startOver")
@@ -235,17 +191,16 @@ function boulderdash:update(dt)
 		end
 		
 
---		if (boulderdash.diamonds >= self.diamonds_to_get) then
-		-- 	if not boulderdash.flash then
-		-- 		audio:play("twang")
-		-- 		love.graphics.setBackgroundColor(255,255,255)
-		-- 		boulderdash.flash=true
-		-- 	end
---		end
-		
-		-- if boulderdash.flash then
-		-- 	love.graphics.setBackgroundColor(0,0,0)
-		-- end
+		if (boulderdash.diamonds >= scoreboard.diamonds_to_get) then
+			if boulderdash.flash then
+				layer:setClearColor(0, 0, 0)
+			else
+--				audio:play("twang")
+				layer:setClearColor(1, 1, 1)
+				boulderdash.flash=true
+			end
+		end
+	
 		-- 
 		-- amoebas:update(delay_dt)
 		scoreboard:update(dt)
