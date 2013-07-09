@@ -28,10 +28,9 @@ end
 function diamond:consume()
 	layer:removeProp(self.prop)
 	boulderdash.diamonds = boulderdash.diamonds + 1
+	audio:play("get_diamond")
 	if (boulderdash.diamonds < level_loader.games[menu.game_index].caves[menu.cave_index].diamonds_to_get) then
-		scoreboard.score = scoreboard.score + scoreboard.diamonds_are_worth
-
---		audio:play("get_diamond")
+		scoreboard.score = scoreboard.score + scoreboard.diamonds_are_worth		
 	else
 		scoreboard.score = scoreboard.score + scoreboard.extra_diamonds_are_worth
 	end

@@ -93,6 +93,7 @@ function base:explode(callback)
 	x,y = base.x, base.y
 	base:remove()
 	boulderdash.Create( "explode", x, y, callback)	-- the center of the explosion
+	audio:play("explosion")
 end
 
 function base:fall()

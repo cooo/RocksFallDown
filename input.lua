@@ -12,7 +12,7 @@ local mouseX, mouseY, posX, posY
 local function pointerCallback ( x, y )
 	-- this function is called when the touch is registered (before clickCallback)
 	-- or when the mouse cursor is moved
-	mouseX, mouseY = layer:wndToWorld ( x, y )
+	mouseX, mouseY = hud_layer:wndToWorld ( x, y )
 
 	posX = math.floor(mouseX/32 + (STAGE_WIDTH/2/32))
 	posY = math.ceil(-(mouseY+32)/32 + (STAGE_HEIGHT/2/32))

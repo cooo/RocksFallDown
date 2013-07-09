@@ -66,7 +66,7 @@ end
 
 function boulderdash:Startup()
 	registerObjects()
---	audio:init()
+	audio:init()
 --	menu:load()
 end
 
@@ -192,12 +192,10 @@ function boulderdash:update(dt)
 		
 
 		if (boulderdash.diamonds >= scoreboard.diamonds_to_get) then
-			if boulderdash.flash then
-				layer:setClearColor(0, 0, 0)
-			else
---				audio:play("twang")
+			if not boulderdash.flash then
+				audio:play("twang", false, boulderdash.resetBackground)
 				layer:setClearColor(1, 1, 1)
-				boulderdash.flash=true
+				boulderdash.flash = true	-- only once
 			end
 		end
 	
@@ -213,14 +211,10 @@ function boulderdash:update(dt)
 
 end
 
-function boulderdash:default()
-	idle_time = love.timer.getMicroTime()	-- the start of idle time
-	for i, object in pairs(boulderdash.objects) do
-		if object.default then
-			object:default()
-		end
-	end
+function boulderdash:resetBackground()
+	layer:setClearColor(0, 0, 0)
 end
+
 
 function boulderdash:draw()
 	for i, object in pairs(boulderdash.objects) do

@@ -90,7 +90,8 @@ function rockford:startAnimation(name)
 	else
 		self:stopCurrentAnimation()
 		self.currentAnimation = self:getAnimation( name )
-		self.currentAnimation:start()
+		self.currentAnimation:start()		
+
 		return self.currentAnimation
 	end
 end
@@ -102,6 +103,7 @@ function rockford:wink()
 	local twitches = { "wink", "tap", "winktap"}
 	rockford:startAnimation(twitches[random])
 end
+
 
 function rockford:load( x, y )
 	local tileDeck = MOAITileDeck2D.new ()
@@ -123,6 +125,7 @@ function rockford:load( x, y )
     rockford.restless_timer = Moai:createLoopTimer(2.0, rockford.wink)
 
 	rockford:startAnimation("entrance")
+
 	
 	if(MOAIInputMgr.device.keyboard) then
 
@@ -165,11 +168,6 @@ function rockford:update(dt)
 	
 	self:move(dt)
 	self:he_might_die()
-	-- self:wink()
-end
-
-function rockford:default()
-	self:setImage(love.graphics.newImage( boulderdash.imgpath .. "rockford/rockford.png"))
 end
 
 function rockford:deadly_critter_at(d)

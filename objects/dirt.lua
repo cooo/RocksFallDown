@@ -13,9 +13,7 @@ end
 
 function dirt:consume()
 	layer:removeProp(self.prop)
-	
---	audio:play("eat_dirt")
-	
+	audio:play("eat_dirt")
 	return true
 end
 

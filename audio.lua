@@ -2,15 +2,20 @@ audio = {}
 
 audio.path          = "sound/"
 audio.sounds        = {}
-audio.loopsounds    = { }
-audio.master_switch = false
+audio.master_switch = true
 
 function audio:init()
-	local sounds = love.filesystem.enumerate( audio.path )	
-	for k, sound in ipairs(sounds) do
-		if string.find(sound, ".ogg") then
-			local sound_name = string.sub(sound,1,string.find(sound, ".ogg") - 1)
-			audio.sounds[sound_name] = love.audio.newSource(audio.path .. sound, "static")
+	MOAIUntzSystem.initialize()
+	
+	local files = MOAIFileSystem.listFiles( audio.path )
+	for _, sound_file in ipairs(files) do
+		if string.find(sound_file, ".ogg") then
+			local sound_name = string.sub(sound_file, 1, string.find(sound_file, ".ogg") - 1)
+			print(sound_name)
+			local sound = MOAIUntzSound.new ()
+			sound:load(audio.path .. sound_file)
+			audio.sounds[sound_name] = sound
+			sound = nil
 		end
 	end
 end
@@ -32,17 +37,22 @@ function audio.execute()
 end
 
 
-function audio:play(sound, loop)
+function audio:play(sound_name, loop, callbackFunction)
 	if audio.master_switch then
-		audio.sounds[sound]:stop()
-		audio.sounds[sound]:play()
-	end
-	if loop then
-		audio.sounds[sound]:setLooping(true)
-		if audio.loopsounds[sound] == nil then
-			audio.loopsounds[sound] = true
+		function threadFunc ()
+			local sound = audio.sounds[sound_name]
+			sound:setVolume ( 1 )
+			sound:setLooping ( loop or false )
+			sound:play()
+			if callbackFunction ~= nil then
+				while sound:isPlaying() do 
+					coroutine:yield() 
+				end
+				callbackFunction()
+			end
 		end
-		
+		thread = MOAICoroutine.new ()
+		thread:run ( threadFunc )
 	end
 end
 
