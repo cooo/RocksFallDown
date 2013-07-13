@@ -1,35 +1,34 @@
 local entrance = boulderdash.Derive("base")
-entrance.images = {}
-entrance.sprite_index = 1
-entrance.end_frame = 3
-entrance.flash_delay = 0.5
-entrance.flash_timer = 0
+entrance.flash_delay = 0.15
+entrance.strip = 2
+
+function entrance:flip_index()
+	if entrance.prop:getIndex()==1 then
+		entrance.prop:setIndex(2)
+	else
+		entrance.prop:setIndex(1)
+	end
+end
+
+function entrance:create_rockford()
+	entrance:remove()
+	local x,y = entrance:getPos()
+	boulderdash.Create( "rockford", x, y)
+end
 
 function entrance:load( x, y )
-	self:setImage(love.graphics.newImage( boulderdash.imgpath .. "entrance.png" ))
-	for i=0, 32*(3-1), 32 do
-		table.insert( self.images, love.graphics.newQuad(i, 0, 32, 32, 32*3, 32) )
+	local tileDeck = Moai:cachedTileDeck(boulderdash.imgpath .. "outbox.png", entrance.strip, 1)
+	entrance.prop  = Moai:createProp(layer, tileDeck, x, y)	
+	
+	if not entrance.flash_timer then	-- start a timer only once
+		entrance.flash_timer = Moai:createLoopTimer(entrance.flash_delay, entrance.flip_index)
 	end
-	self:setPos( x, y )
-	self.flash_timer = reset_time()
-end
-
-function entrance:update(dt)
-	if (since(self.flash_timer) > self.flash_delay) then
-		self.sprite_index = self.sprite_index + 1
-		if (self.sprite_index >= self.end_frame) then
-			self.sprite_index = self.end_frame
---			boulderdash:Replace("entrance", "rockford") Replace is deprecated
-			audio:play("twang")
-		end
-		self.flash_timer = reset_time()
-	end	
-end
-
-function entrance:draw()
-	local x, y = self:getPos()	
-	local img  = self:getImage()
-	love.graphics.drawq(img, self.images[self.sprite_index or 1], x*self.scale, y*self.scale)
+	
+	local timer = MOAITimer.new()
+	timer:setSpan( 2.0 )
+	timer:setMode( MOAITimer.NORMAL )
+	timer:setListener( MOAITimer.EVENT_TIMER_END_SPAN, entrance.create_rockford)
+	timer:start()	
 end
 
 return entrance

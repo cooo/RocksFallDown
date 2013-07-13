@@ -11,7 +11,7 @@ rockford.restless_timer = nil
 rockford.smooth_scrolling = { x=0, y=0 }
 rockford.config_animations = {
 	entrance = {
-		offset = 1,
+		offset = 5,
         length = 4,
         time = 0.125,
         mode = MOAITimer.NORMAL
@@ -54,17 +54,19 @@ local delay_dt = 0
 local sprite_index
 local directions = { {x=-1,y=0}, {x=0,y=-1}, {x=1,y=0}, {x=0,y=1} }
 
+function rockford:play_twang()
+	audio:play("twang")
+end
 
 function rockford:animateRockford(name, offset, length, time, mode)	-- lenght=number of frames, offset=start index
 
 	local curve = MOAIAnimCurve.new()
 	curve:reserveKeys (length)
-	-- curve:setKey (1, 0,           offset,        MOAIEaseType.FLAT)
-	-- curve:setKey (2, time*length, offset+length, MOAIEaseType.FLAT)
 	
 	for i=1, length do
 		curve:setKey (i, (i-1)/length, i+offset, MOAIEaseType.FLAT)
 	end
+
 	local anim = MOAIAnim:new()
 	anim:reserveLinks(1)
 	anim:setLink( 1, curve, self.prop, MOAIProp2D.ATTR_INDEX)
@@ -84,13 +86,18 @@ function rockford:stopCurrentAnimation()
 	end
 end
 
-function rockford:startAnimation(name)
+function rockford:startAnimation(name, callback)
 	if self.currentAnimation and self.currentAnimation.name==name then
 	--	print("already " .. name)
 	else
 		self:stopCurrentAnimation()
 		self.currentAnimation = self:getAnimation( name )
-		self.currentAnimation:start()		
+		
+		if callback then
+			self.currentAnimation:setListener ( MOAIAction.EVENT_STOP, callback )
+
+		end
+		self.currentAnimation:start()
 
 		return self.currentAnimation
 	end
@@ -114,9 +121,8 @@ function rockford:load( x, y )
 	rockford.prop = MOAIProp2D.new ()
 	rockford.prop:setDeck ( tileDeck )
 	rockford.prop:setLoc ( Moai:x_and_y(x,y) )
-
 	layer:insertProp(rockford.prop)
-		
+
 	self.animations = {}
 	for name, def in pairs ( rockford.config_animations ) do
 		self:animateRockford ( name, def.offset, def.length, def.time, def.mode )
@@ -124,11 +130,11 @@ function rockford:load( x, y )
 
     rockford.restless_timer = Moai:createLoopTimer(2.0, rockford.wink)
 
-	rockford:startAnimation("entrance")
+	rockford:startAnimation("entrance", rockford.play_twang)
 
 	
 	if(MOAIInputMgr.device.keyboard) then
-
+	
 	    MOAIInputMgr.device.keyboard:setCallback(
 	        function(key,down)
 				

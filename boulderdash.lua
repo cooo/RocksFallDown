@@ -47,7 +47,7 @@ end
 
 function boulderdash:findRockford()
 	for i, object in pairs(boulderdash.objects) do
-		if (object.type == "rockford") then
+		if (object.type == "entrance") then
 			return object
 		end
 	end	
@@ -90,7 +90,7 @@ function boulderdash:LevelUp()
 	end
 	
 	local rf = boulderdash:findRockford()
-	local xc,yc = rf.x, rf.y
+	local xc,yc = rf.x or 0, rf.y or 0
 	-- 
 	boulderdash.done = false
 	boulderdash.flash = false
@@ -185,7 +185,9 @@ function boulderdash:update(dt)
 		
 		if boulderdash.done then
 			-- audio:stop("twinkly_magic_wall")
-			MOAIInputMgr.device.keyboard:setCallback(nil)
+			if MOAIInputMgr.device.keyboard then
+				MOAIInputMgr.device.keyboard:setCallback(nil)
+			end
 			scoreboard.one_second_timer:stop() -- let it run out through the gameloop timer
 			delay = 0		
 		end

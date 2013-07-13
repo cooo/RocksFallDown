@@ -11,7 +11,6 @@ function audio:init()
 	for _, sound_file in ipairs(files) do
 		if string.find(sound_file, ".ogg") then
 			local sound_name = string.sub(sound_file, 1, string.find(sound_file, ".ogg") - 1)
-			print(sound_name)
 			local sound = MOAIUntzSound.new ()
 			sound:load(audio.path .. sound_file)
 			audio.sounds[sound_name] = sound
