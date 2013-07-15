@@ -62,10 +62,6 @@ function scoreboard:update(dt)
 	for i, digit in pairs(self.matrix) do
 		digit:update()
 	end
-	
-	-- if boulderdash:magic_wall_tingles() then
-	-- 	audio:play("twinkly_magic_wall", true)
-	-- end
 end
 
 -- finds a digit on the scoreboard and change it to i, create it if not found

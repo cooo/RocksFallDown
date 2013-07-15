@@ -112,9 +112,9 @@ local function parse(file)
 				cave.diamonds_are_worth       = string.split(diamond_values, " ")[1] or 0
 				cave.extra_diamonds_are_worth = string.split(diamond_values, " ")[2] or 0
 			elseif line:starts_with("MagicWallTime") then
-				cave.magictime = line:get_after("MagicWallTime=")
+				cave.magictime = line:get_after("MagicWallTime=") + 0
 			elseif line:starts_with("AmoebaTime") then
-				cave.amoebatime = line:get_after("AmoebaTime=")
+				cave.amoebatime = line:get_after("AmoebaTime=") + 0
 			end
 
 		elseif (current_section == "[map]") then
@@ -151,10 +151,12 @@ end
 
 function lookup(letter)
 	object = level_loader.object_map2[letter]
-	if object and (object=="dirt" or object=="rock" or object=="steel" or object=="wall" or object=="diamond" or object=="entrance" or object=="outbox" or object=="firefly" or object=="butterfly") then
+	if object and object~="amoeba" then
 		return object
 	else
---		print("cannot find " .. letter)
+		if letter~="space" then
+ 			print("cannot find " .. letter)
+		end
 		return "space"
 	end
 end

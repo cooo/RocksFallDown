@@ -250,6 +250,7 @@ function rockford:dies()
 		self.restless_timer:stop()
 		self.currentAnimation = nil
 		rockford:explode(boulderdash.startOver)
+		audio:stopAll()
 	end
 end
 

@@ -3,6 +3,7 @@ audio = {}
 audio.path          = "sound/"
 audio.sounds        = {}
 audio.master_switch = true
+audio.loopsounds    = {}
 
 function audio:init()
 	MOAIUntzSystem.initialize()
@@ -29,7 +30,7 @@ function audio.execute()
 		love.audio.stop( )
 	else
 		audio.master_switch = true
-		for i, sound in ipairs(audio.loopsounds) do
+		for sound in pairs(audio.loopsounds) do
 			audio:play(sound, true)
 		end
 	end
@@ -43,6 +44,9 @@ function audio:play(sound_name, loop, callbackFunction)
 			sound:setVolume ( 1 )
 			sound:setLooping ( loop or false )
 			sound:play()
+			if loop then
+				audio.loopsounds[sound_name] = true
+			end
 			if callbackFunction ~= nil then
 				while sound:isPlaying() do 
 					coroutine:yield() 
@@ -55,7 +59,13 @@ function audio:play(sound_name, loop, callbackFunction)
 	end
 end
 
-function audio:stop(sound)
-	audio.sounds[sound]:stop()
-	audio.loopsounds[sound] = nil
+function audio:stop(sound_name)
+	audio.sounds[sound_name]:stop()
+	audio.loopsounds[sound_name] = nil
+end
+
+function audio:stopAll()
+	for sound_name in pairs(audio.loopsounds) do
+		audio.sounds[sound_name]:stop()
+	end
 end

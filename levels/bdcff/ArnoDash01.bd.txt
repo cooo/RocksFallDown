@@ -15,6 +15,42 @@ Caves=20
 
 
 [cave]
+Name=Cave 2
+CaveDelay=8
+CaveTime=100
+DiamondsRequired=8
+DiamondValue=35 40
+MagicWallTime=18
+Colors=Black Black Red LightRed White
+
+[map]
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+WXP. ...... rr.r......r ..r.. ..rr..r..W
+W.....rr......  r.r. .r...r......r.....W
+W...r..........r .....r ....r.r.r... . W
+W......r...............r..r....r.......W
+Wrr.........rr rrr..... ..rr....r......W
+W....r..r ..r.r...rr....r..........r ..W
+W. ....r...r.rrr.r....... ........ .r..W
+W.... ....rr...r.r....r..r..r...r....r.W
+W....r.... .........r.....r...r....rr.rW
+W..... ..................r..r....... ..W
+W.... .............r.. r....r.....r....W
+W.................. .... r.r....r......W
+W.rr......r.....r........r...MMM...r...W
+W.r....rr. ...r...rr...r........ ......W
+W.... ........ r... .rr.........rr....rW
+W...r.r..... .............r....r.......W
+W...............rrr. .......r.....r...rW
+W.........r...r......r.... r......r....W
+W..r.....r.........r..........r.r...r. W
+W....... r.......................rr....W
+WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+[/map]
+[/cave]
+
+
+[cave]
 Name=Cave 1
 CaveDelay=8
 CaveTime=120
@@ -50,40 +86,6 @@ WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 [/map]
 [/cave]
 
-[cave]
-Name=Cave 2
-CaveDelay=8
-CaveTime=100
-DiamondsRequired=8
-DiamondValue=35 40
-MagicWallTime=16
-Colors=Black Black Red LightRed White
-
-[map]
-WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-WXP. ...... rr.r......r ..r.. ..rr..r..W
-W.....rr......  r.r. .r...r......r.....W
-W...r..........r .....r ....r.r.r... . W
-W......r...............r..r....r.......W
-Wrr.........rr rrr..... ..rr....r......W
-W....r..r ..r.r...rr....r..........r ..W
-W. ....r...r.rrr.r....... ........ .r..W
-W.... ....rr...r.r....r..r..r...r....r.W
-W....r.... .........r.....r...r....rr.rW
-W..... ..................r..r....... ..W
-W.... .............r.. r....r.....r....W
-W.................. .... r.r....r......W
-W.rr......r.....r........r....M....r...W
-W.r....rr. ...r...rr...r........ ......W
-W.... ........ r... .rr.........rr....rW
-W...r.r..... .............r....r.......W
-W...............rrr. .......r.....r...rW
-W.........r...r......r.... r......r....W
-W..r.....r.........r..........r.r...r. W
-W....... r.......................rr....W
-WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
-[/map]
-[/cave]
 
 
 [cave]

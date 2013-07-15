@@ -59,6 +59,16 @@ function Moai:createLoopTimer ( spanTime, callbackFunction )
 	return timer
 end
 
+-- starts a timer and calls 'callbackFunction' once
+function Moai:createTimer ( spanTime, callbackFunction )
+	local timer = MOAITimer.new()
+	timer:setSpan( spanTime )
+	timer:setMode( MOAITimer.NORMAL )
+	timer:setListener( MOAITimer.EVENT_TIMER_END_SPAN, callbackFunction)
+	timer:start()	
+	return timer
+end
+
 function Moai:createHudButton(tag, x0,y0,x1,y1) --250,-50,350,-150
 		
 	local scriptDeck = MOAIScriptDeck.new()

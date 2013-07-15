@@ -24,11 +24,7 @@ function entrance:load( x, y )
 		entrance.flash_timer = Moai:createLoopTimer(entrance.flash_delay, entrance.flip_index)
 	end
 	
-	local timer = MOAITimer.new()
-	timer:setSpan( 2.0 )
-	timer:setMode( MOAITimer.NORMAL )
-	timer:setListener( MOAITimer.EVENT_TIMER_END_SPAN, entrance.create_rockford)
-	timer:start()	
+	Moai:createTimer(2.0, entrance.create_rockford)
 end
 
 return entrance

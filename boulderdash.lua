@@ -1,6 +1,7 @@
 require("levels/levels")
 
 require("amoebas")
+require("magic_walls")
 require("audio")
 require("menu")
 
@@ -22,10 +23,6 @@ delay_dt = 0
 
 function id(x,y)
 	return "x" .. x .. "y" .. y
-end
-
-function boulderdash:magic_wall_tingles()
-	return not boulderdash.magicwall_dormant and not boulderdash.magicwall_expired 
 end
 
 
@@ -98,9 +95,8 @@ function boulderdash:LevelUp()
 	-- boulderdash.died = false
 	-- boulderdash.start_over = false
 	boulderdash.diamonds = 0
-	-- boulderdash.magictime = level_loader.games[menu.game_index].caves[menu.cave_index].magictime or 0
-	-- boulderdash.magicwall_dormant = true
-	-- boulderdash.magicwall_expired = false
+	
+	magic_walls:init(level_loader.games[menu.game_index].caves[menu.cave_index].magictime or 0)
 	-- boulderdash.keypressed = {}
 	-- amoebas:init(tonumber(level_loader.games[menu.game_index].caves[menu.cave_index].amoebatime))
 	-- 
@@ -184,7 +180,6 @@ function boulderdash:update(dt)
 		end
 		
 		if boulderdash.done then
-			-- audio:stop("twinkly_magic_wall")
 			if MOAIInputMgr.device.keyboard then
 				MOAIInputMgr.device.keyboard:setCallback(nil)
 			end
