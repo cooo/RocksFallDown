@@ -25,7 +25,6 @@ function explode:load( x, y )
 	anim:setMode ( MOAITimer.NORMAL )
 	anim:setListener ( MOAITimer.EVENT_TIMER_END_SPAN, 
 		function ()
-			layer:removeProp(self.prop) -- remove the explosion
 			boulderdash:ReplaceByID(explode.id, "diamond") 
 			if self.callback then
 				self.callback()

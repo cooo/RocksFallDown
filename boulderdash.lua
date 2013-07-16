@@ -98,7 +98,7 @@ function boulderdash:LevelUp()
 	
 	magic_walls:init(level_loader.games[menu.game_index].caves[menu.cave_index].magictime or 0)
 	-- boulderdash.keypressed = {}
-	-- amoebas:init(tonumber(level_loader.games[menu.game_index].caves[menu.cave_index].amoebatime))
+	amoebas:init(tonumber(level_loader.games[menu.game_index].caves[menu.cave_index].amoebatime))
 	-- 
 	delay = 0.1
 	scoreboard:load()
@@ -135,6 +135,7 @@ end
 
 function boulderdash:ReplaceByID(id, replace)
 	local object = boulderdash:findByID(id)
+	object:remove()
 	boulderdash.Create( replace, object.x, object.y )
 	return object.x, object.y
 end
@@ -168,7 +169,7 @@ end
 function boulderdash:update(dt)
 	if delay_dt > delay then
 
-		-- amoebas.grow_directions = {}
+		amoebas.clear()
 
 		for i, object in pairs(boulderdash.objects) do
 			if object.update then
@@ -197,7 +198,7 @@ function boulderdash:update(dt)
 		end
 	
 		-- 
-		-- amoebas:update(delay_dt)
+		amoebas:update(delay_dt)
 		scoreboard:update(dt)
 		-- menu:update(dt)
 		

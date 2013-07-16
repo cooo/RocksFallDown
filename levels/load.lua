@@ -151,7 +151,7 @@ end
 
 function lookup(letter)
 	object = level_loader.object_map2[letter]
-	if object and object~="amoeba" then
+	if object then
 		return object
 	else
 		if letter~="space" then
