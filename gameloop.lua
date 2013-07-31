@@ -41,6 +41,7 @@ function gameloop:load()
 	hud_layer = input:createHud(viewport)
 	scoreboard_layer = scoreboard:createScoreboard(viewport)
 
+	input:createButtons()
 	
 	camera = MOAICamera2D.new ()	
 	layer:setCamera(camera)

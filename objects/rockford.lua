@@ -1,12 +1,5 @@
 local rockford = boulderdash.Derive("base")
-rockford.images = {}
-rockford.images.left = {}
-rockford.images.right = {}
-rockford.images.wink = {}
-rockford.images.tap = {}
-rockford.strip = 1
-rockford.grab = false
-rockford.key = nil
+
 rockford.restless_timer = nil
 rockford.smooth_scrolling = { x=0, y=0 }
 rockford.config_animations = {
@@ -48,10 +41,6 @@ rockford.config_animations = {
 	}
 }
 
-local local_delay = 0.05
-local delay_dt = 0
-
-local sprite_index
 local directions = { {x=-1,y=0}, {x=0,y=-1}, {x=1,y=0}, {x=0,y=1} }
 
 function rockford:play_twang()
@@ -95,14 +84,18 @@ function rockford:startAnimation(name, callback)
 		
 		if callback then
 			self.currentAnimation:setListener ( MOAIAction.EVENT_STOP, callback )
-
 		end
 		self.currentAnimation:start()
-
 		return self.currentAnimation
 	end
 end
 
+function rockford:stopRunning()
+	if self.currentAnimation and (self.currentAnimation.name=="left" or self.currentAnimation.name=="right") then
+		self:stopCurrentAnimation()
+		rockford.prop:setIndex(1)
+	end
+end
 
 -- he gets a little nervous when he doesn't have anything to do
 function rockford:wink()
@@ -111,17 +104,13 @@ function rockford:wink()
 	rockford:startAnimation(twitches[random])
 end
 
-
 function rockford:load( x, y )
 	local tileDeck = MOAITileDeck2D.new ()
 	tileDeck:setTexture ( boulderdash.imgpath .. "rockford.png" )
 	tileDeck:setSize ( 8, 6 )	-- width, height
 	tileDeck:setRect ( 0, 0, 32, 32 )
 	
-	rockford.prop = MOAIProp2D.new ()
-	rockford.prop:setDeck ( tileDeck )
-	rockford.prop:setLoc ( Moai:x_and_y(x,y) )
-	layer:insertProp(rockford.prop)
+	rockford.prop = Moai:createProp(layer, tileDeck, x, y)
 
 	self.animations = {}
 	for name, def in pairs ( rockford.config_animations ) do
@@ -129,43 +118,7 @@ function rockford:load( x, y )
     end
 
     rockford.restless_timer = Moai:createLoopTimer(2.0, rockford.wink)
-
 	rockford:startAnimation("entrance", rockford.play_twang)
-
-	
-	if(MOAIInputMgr.device.keyboard) then
-	
-	    MOAIInputMgr.device.keyboard:setCallback(
-	        function(key,down)
-				
-	            if down==true then
-					self.key = key
-					if key==32 then
-						self.grab=true
-					-- up,down=q (113),a (97), left,right=o (111), p (112)
-					elseif (key==113 or key==357) then
-						rockford:UpOrDown(-1)
-					elseif (key==97 or key==359) then
-						rockford:UpOrDown(1)
-					elseif (key==111 or key==356) then
-						rockford:LeftOrRight(-1)
-					elseif (key==112 or key==358) then
-						rockford:LeftOrRight(1)
-					end
-				else
-					if key==32 then
-						self.grab=false
-					else
-						self.key = nil
-						self:stopCurrentAnimation()
-						rockford.prop:setIndex(1)
-					end
-					
-	            end
-	        end
-	    )
-	end	
-
 end
 
 function rockford:update(dt)
@@ -186,53 +139,20 @@ end
 
 -- move him around or grab something
 function rockford:move(dt)
---	if delay_dt > local_delay then
-		if not (boulderdash.dead or boulderdash.done) then
-
-			-- up,down=q (113),a (97), left,right=o (111), p (112)
-			if (self.key==113 or self.key==357) then
-				rockford:UpOrDown(-1)
-			elseif (self.key==97 or self.key==359) then
-				rockford:UpOrDown(1)
-			elseif (self.key==111 or self.key==356) then
-				rockford:LeftOrRight(-1)
-			elseif (self.key==112 or self.key==358) then
-				rockford:LeftOrRight(1)
-			end
-	
-			if (input.touching == "left") then
-				rockford:LeftOrRight(-1)
-			elseif (input.touching == "right") then
-				rockford:LeftOrRight(1)
-			elseif (input.touching == "up") then
-				rockford:UpOrDown(-1)
-			elseif (input.touching == "down") then
-				rockford:UpOrDown(1)
-			end
-
+	if not (boulderdash.dead or boulderdash.done) then
+		if (input.touching == "left" or input.rockford == "left") then
+			rockford:LeftOrRight(-1)
+		elseif (input.touching == "right" or input.rockford == "right") then
+			rockford:LeftOrRight(1)
+		elseif (input.touching == "up" or input.rockford == "up") then
+			rockford:UpOrDown(-1)
+		elseif (input.touching == "down" or input.rockford == "down") then
+			rockford:UpOrDown(1)
+		elseif input.touching == nil then
+			rockford:stopRunning()
 		end
-		delay_dt = 0		
-  --  end
---	delay_dt = delay_dt + dt
-	
-	
-	
-	-- if not boulderdash.done and not rockford.moved then
-	-- 	if     love.keyboard.isDown("right") then self:LeftOrRight( 1, love.keyboard.isDown(" ")) 
-	-- 	elseif love.keyboard.isDown("down")  then self:UpOrDown   ( 1, love.keyboard.isDown(" ")) 
-	-- 	elseif love.keyboard.isDown("left")  then self:LeftOrRight(-1, love.keyboard.isDown(" ")) 
-	-- 	elseif love.keyboard.isDown("up")    then self:UpOrDown   (-1, love.keyboard.isDown(" "))
-	-- 	elseif (#boulderdash.keypressed > 0) then
-	-- 		local key = table.remove(boulderdash.keypressed, 1)
-	-- 		if     (key=="right") then self:LeftOrRight( 1, love.keyboard.isDown(" ")) 
-	-- 		elseif (key=="down")  then self:UpOrDown   ( 1, love.keyboard.isDown(" ")) 
-	-- 		elseif (key=="left")  then self:LeftOrRight(-1, love.keyboard.isDown(" ")) 
-	-- 		elseif (key=="up")    then self:UpOrDown   (-1, love.keyboard.isDown(" "))
-	-- 		end
-	-- 	end
-	-- end
+	end
 end
-
 
 -- when a rock or diamond falls on his head rockford dies
 function rockford:he_might_die()
@@ -277,8 +197,7 @@ function rockford:dead_from_being_close_to_deadly_critters(xr, yr)
 end
 
 function rockford:LeftOrRight(x)
-
-	table.remove(boulderdash.keypressed, 1)
+	input.rockford = nil
 	if self:canMove( x, 0 ) then
 		if self.grab then
 			self:doGrabRockford( x, 0 )
@@ -294,8 +213,7 @@ function rockford:LeftOrRight(x)
 end
 
 function rockford:UpOrDown(y)
-
-	table.remove(boulderdash.keypressed, 1)
+	input.rockford = nil
 	if self:canMove( 0, y ) then
 		if self.grab then
 			self:doGrabRockford( 0, y )

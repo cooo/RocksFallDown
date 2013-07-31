@@ -14,7 +14,6 @@ boulderdash.done = false
 boulderdash.dead = false
 boulderdash.start_over = false
 boulderdash.flash = false
-boulderdash.keypressed = {}
 
 local register = {}
 
@@ -97,7 +96,6 @@ function boulderdash:LevelUp()
 	boulderdash.diamonds = 0
 	
 	magic_walls:init(level_loader.games[menu.game_index].caves[menu.cave_index].magictime or 0)
-	-- boulderdash.keypressed = {}
 	amoebas:init(tonumber(level_loader.games[menu.game_index].caves[menu.cave_index].amoebatime))
 	-- 
 	delay = 0.1

@@ -2,6 +2,8 @@ input = {}
 
 input.partition = nil  -- a MOAIPartition
 input.touching = nil
+input.grab = false
+input.key = nil
 
 local mouseX, mouseY, posX, posY
   
@@ -28,18 +30,21 @@ function clickCallback ( down )
 		local pick = input.partition:propForPoint ( mouseX, mouseY )
 		if pick then
 			input.touching = pick.tag
-			MOAIDraw.drawRect ( 100,-50,200,-150 )
+			input.rockford = pick.tag
+			print(os.date(), input.touching, "down")
+--			MOAIDraw.drawRect ( 100,-50,200,-150 )
 		end
 	
 
-		print ("Click!", posX, posY)
+--		print ("Click!", posX, posY)
 	
 		for i, object in pairs(boulderdash.objects) do
 			if (object.x==posX and object.y==posY) then
-				print("DEBUG ",object.type, object.x, object.y)
+--				print("DEBUG ",object.type, object.x, object.y)
 			end
 		end
 	else
+		print(os.date(), input.touching, "up")
 		input.touching = nil
 	end
 	-- local object = boulderdash:findByID(id(posX,posY))
@@ -87,5 +92,42 @@ function input:createHud(viewport)
 	hud_layer:insertProp(Moai:createHudButton("down",  175, -150, 275,- 250))	
 	
 	return hud_layer
+end
+
+function input:createButtons()
+
+	if(MOAIInputMgr.device.keyboard) then
+	
+	    MOAIInputMgr.device.keyboard:setCallback(
+	        function(key,down)
+	            if down==true then
+					self.key = key
+					if key==32 then
+						self.grab=true
+					-- up,down=q (113),a (97), left,right=o (111), p (112)
+					elseif (key==113 or key==357) then
+						input.touching = "up"
+					elseif (key==97 or key==359) then
+						input.touching = "down"
+					elseif (key==111 or key==356) then
+						input.touching = "left"
+					elseif (key==112 or key==358) then
+						input.touching = "right"
+					end
+					input.rockford = input.touching
+				else
+					if key==32 then
+						self.grab=false
+					else
+						if (self.key==key) then -- it might have changed with a quick move
+							input.touching = nil
+						end
+					end
+					
+	            end
+	        end
+	    )
+	end	
+	
 end
 
