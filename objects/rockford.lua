@@ -43,12 +43,7 @@ rockford.config_animations = {
 
 local directions = { {x=-1,y=0}, {x=0,y=-1}, {x=1,y=0}, {x=0,y=1} }
 
-function rockford:play_twang()
-	audio:play("twang")
-end
-
 function rockford:animateRockford(name, offset, length, time, mode)	-- lenght=number of frames, offset=start index
-
 	local curve = MOAIAnimCurve.new()
 	curve:reserveKeys (length)
 	
@@ -118,7 +113,7 @@ function rockford:load( x, y )
     end
 
     rockford.restless_timer = Moai:createLoopTimer(2.0, rockford.wink)
-	rockford:startAnimation("entrance", rockford.play_twang)
+	rockford:startAnimation("entrance", audio:play("twang"))
 end
 
 function rockford:update(dt)
@@ -127,14 +122,6 @@ function rockford:update(dt)
 	
 	self:move(dt)
 	self:he_might_die()
-end
-
-function rockford:deadly_critter_at(d)
-	if boulderdash:find(self.x+d.x, self.y+d.y) then
-		return boulderdash:find(self.x+d.x, self.y+d.y).deadly
-	else
-		return false
-	end
 end
 
 -- move him around or grab something
@@ -163,17 +150,6 @@ function rockford:he_might_die()
 	self:dead_from_being_close_to_deadly_critters(xr, yr)
 end
 
-function rockford:dies()
-	if not boulderdash.done then		-- unless the level was finished
-		scoreboard.one_second_timer:stop()
-		boulderdash.dead = true -- to prevent starting the explode sequence again
-		self.restless_timer:stop()
-		self.currentAnimation = nil
-		rockford:explode(boulderdash.startOver)
-		audio:stopAll()
-	end
-end
-
 function rockford:time_is_up()
 	if type(scoreboard.clock)=="number" and scoreboard.clock <= 0 then
 		rockford:dies()
@@ -196,10 +172,30 @@ function rockford:dead_from_being_close_to_deadly_critters(xr, yr)
 	end
 end
 
+function rockford:deadly_critter_at(d)
+	if boulderdash:find(self.x+d.x, self.y+d.y) then
+		return boulderdash:find(self.x+d.x, self.y+d.y).deadly
+	else
+		return false
+	end
+end
+
+function rockford:dies()
+	if not boulderdash.done then		-- unless the level was finished
+		scoreboard.one_second_timer:stop()
+		boulderdash.dead = true -- to prevent starting the explode sequence again
+		self.restless_timer:stop()
+		self.currentAnimation = nil
+		rockford:explode(boulderdash.startOver)
+		audio:stopAll()
+	end
+end
+
 function rockford:LeftOrRight(x)
 	input.rockford = nil
 	if self:canMove( x, 0 ) then
-		if self.grab then
+		if input.grab then
+			print("grab!")
 			self:doGrabRockford( x, 0 )
 		else
 			self:doMoveRockford( x, 0 )
@@ -215,7 +211,7 @@ end
 function rockford:UpOrDown(y)
 	input.rockford = nil
 	if self:canMove( 0, y ) then
-		if self.grab then
+		if input.grab then
 			self:doGrabRockford( 0, y )
 		else
 			self:doMoveRockford( 0, y )
