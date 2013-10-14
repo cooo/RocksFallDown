@@ -12,7 +12,7 @@
 -- function gameloop:draw()
 -- end
 
-FRAMES = 60
+FRAMES = 10
 require("gameloop")
 
 local function forever(dt)

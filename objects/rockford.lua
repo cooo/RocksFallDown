@@ -1,7 +1,8 @@
 local rockford = boulderdash.Derive("base")
 
+
 rockford.restless_timer = nil
-rockford.smooth_scrolling = { x=0, y=0 }
+
 rockford.config_animations = {
 	entrance = {
 		offset = 5,
@@ -86,6 +87,8 @@ function rockford:startAnimation(name, callback)
 end
 
 function rockford:stopRunning()
+	print("stop running")
+	input.must_move = nil
 	if self.currentAnimation and (self.currentAnimation.name=="left" or self.currentAnimation.name=="right") then
 		self:stopCurrentAnimation()
 		rockford.prop:setIndex(1)
@@ -126,16 +129,19 @@ end
 
 -- move him around or grab something
 function rockford:move(dt)
+
 	if not (boulderdash.dead or boulderdash.done) then
-		if (input.touching == "left" or input.rockford == "left") then
+		if (input.must_move == "left") then
 			rockford:LeftOrRight(-1)
-		elseif (input.touching == "right" or input.rockford == "right") then
+		elseif (input.must_move == "right") then
 			rockford:LeftOrRight(1)
-		elseif (input.touching == "up" or input.rockford == "up") then
+		elseif (input.must_move == "up") then
 			rockford:UpOrDown(-1)
-		elseif (input.touching == "down" or input.rockford == "down") then
+		elseif (input.must_move == "down") then
 			rockford:UpOrDown(1)
-		elseif input.touching == nil then
+		end
+		
+		if not input.touch_down and input.must_move then
 			rockford:stopRunning()
 		end
 	end
@@ -192,7 +198,6 @@ function rockford:dies()
 end
 
 function rockford:LeftOrRight(x)
-	input.rockford = nil
 	if self:canMove( x, 0 ) then
 		if input.grab then
 			print("grab!")
@@ -209,7 +214,6 @@ function rockford:LeftOrRight(x)
 end
 
 function rockford:UpOrDown(y)
-	input.rockford = nil
 	if self:canMove( 0, y ) then
 		if input.grab then
 			self:doGrabRockford( 0, y )
@@ -235,29 +239,15 @@ function rockford:canMove(x,y)
 	return rockford:consume(object)
 end
 
-function rockford:doMoveRockford(x,y)
+
+function rockford:doMoveRockford(dx,dy)
+
+	self:doMove(dx,dy)
 
 	local xr,yr = self:getPos()
-	self:doMove(x,y)
+	camera:movement(xr,yr, dx, dy)
 	
-	if ((xr+x>10 and xr>10) and (xr<27 and xr+x<27)) then
-		rockford.smooth_scrolling.x = rockford.smooth_scrolling.x + x
-	end
-
-	if ((yr>10 and yr+y>10) and (yr+y<19 and yr<19)) then
-		rockford.smooth_scrolling.y = rockford.smooth_scrolling.y + y
-	end
-	
-	if (rockford.smooth_scrolling.x > 4) or (rockford.smooth_scrolling.x < -4) then
-		camera:moveLoc ( rockford.smooth_scrolling.x*self.scale, 0, 1.0 )
-		rockford.smooth_scrolling.x = 0
-	end
-	
-	if (rockford.smooth_scrolling.y > 2) or (rockford.smooth_scrolling.y < -2) then
-		camera:moveLoc(0, -rockford.smooth_scrolling.y*self.scale, 1.0)
-		rockford.smooth_scrolling.y = 0
-	end
-		
+	input.moved = true
 end
 
 function rockford:doGrabRockford(x,y)

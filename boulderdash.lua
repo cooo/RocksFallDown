@@ -117,7 +117,7 @@ function boulderdash:LevelUp()
 		yc = yc - 11
 	end
 	
-	camera:moveLoc(xc*32, -yc*32, 2.0) 
+	camera:moveLoc(xc, -yc, 2.0) 
 	
 --	camera:setPosition(0,0)
 --	    camera:moveLoc(xc*32,yc*32)

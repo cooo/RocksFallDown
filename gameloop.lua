@@ -1,5 +1,6 @@
 require("lib/strings")
 require("boulderdash")
+require("camera")
 require("moai_extensions")	-- helpful stuff
 require("levels/load")
 require("input")
@@ -43,8 +44,8 @@ function gameloop:load()
 
 	input:createButtons()
 	
-	camera = MOAICamera2D.new ()	
-	layer:setCamera(camera)
+	camera:init(layer)
+	
 	
 --	scoreboard_layer = scoreboard:create(viewport)
 
