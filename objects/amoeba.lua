@@ -12,7 +12,7 @@ function amoeba:load( x, y )
 	amoebas.present = true
 end
 
-function amoeba:update(dt)
+function amoeba:update()
 	amoeba:grow()
 end
 

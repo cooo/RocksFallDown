@@ -19,7 +19,7 @@ function magic_wall:goToSleep()
 	magic_wall.prop:setDeck(magic_wall.sleepy)
 end
 
-function magic_wall:update(dt)
+function magic_wall:update()
 	-- check for falling rocks or diamonds
 	local x, y = self:getPos()
 	local object = boulderdash:find(x,y-1)

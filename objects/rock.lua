@@ -9,7 +9,7 @@ function rock:load( x, y )
 	self.prop  = Moai:createProp(layer, quad, x, y)
 end
 
-function rock:update(dt)
+function rock:update()
   	self:fall()
 	
 	local x,y = self:getPos()

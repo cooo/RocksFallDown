@@ -68,6 +68,7 @@ local function vertical(yr, yc, dy)
 	return (camera.smooth_scrolling.y > 3) or (camera.smooth_scrolling.y < -3)
 end
 
+-- the position of rockford (xr,yr) and the delta he wants to move (dx,dy)
 function camera:movement(xr, yr, dx, dy)
 	local xc, yc = camera:getLoc()
 	if horizontal(xr, xc, dx) then

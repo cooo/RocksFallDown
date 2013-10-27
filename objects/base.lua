@@ -25,14 +25,13 @@ end
 
 function base:to_s()
 	if base.falling then
-		print(base.type .. ": (" .. base.x .. ", " .. base.y .. ") falling")
+		return frame_counter .. ": " .. base.type .. ": (" .. base.x .. ", " .. base.y .. ") falling"
 	else
-		print(base.type .. ": (" .. base.x .. ", " .. base.y .. ") not falling")
+		return frame_counter .. ": " .. base.type .. ": (" .. base.x .. ", " .. base.y .. ") not falling"
 	end
 end
 
 function base:setPos( x, y )
---	print("base:setPos (" .. x .. ", " .. y .. ")" )
 	base.x = x
 	base.y = y
 	if (x==13 and y==2) then
@@ -97,6 +96,7 @@ function base:explode(callback)
 end
 
 function base:fall()
+	
 	local x,y = base:getPos()
 	
 	local object_under = boulderdash:find(x,y+1)
@@ -127,19 +127,5 @@ function base:remove()
 	layer:removeProp(self.prop)
 end
 
-
-function base:draw()	
-	-- local x, y = self:getPos()	
-	-- local img = self:getImage()
-
-	
-	-- love.graphics.draw(img, x*self.scale, y*self.scale, 0, 2, 2)
-	-- 
-	-- if (base.debug) then
-	-- 	print(base.type)
-	-- 	print(base.x .. ", " .. base.y)
-	-- 	print(base.falling)
-	-- end
-end
 
 return base

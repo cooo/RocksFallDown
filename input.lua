@@ -1,5 +1,3 @@
-require "socket"
-
 input = {}
 -- it goes a little something like this, one touch:
 -- click:
@@ -17,151 +15,186 @@ input = {}
 -- o stop rockford from moving
 --
 -- 
-
-
 input.partition = nil  -- a MOAIPartition
-input.must_move = nil
-input.touch_down = false
-input.grab = false
 input.key = nil
-input.moved = false
+input.grab = false
+input.subscribers       = {}	    -- entities can subscribe to input events
 
 local ONE_STEP = 10
-local RUNNING  = 35
-local down_counter = 0
+local tap_count = 0
 
 local startX, startY, endX, endY
-local joystick_x = 0
-local joystick_y = 0
 local mouseX, mouseY --, posX, posY
 
-local delta_time = 0;
 local ONE_STEP_TIME = 0.5
 
 local movements = {}
+
+
+local function move_to(direction)
+	for i, subscriber in pairs(input.subscribers) do
+		if not subscriber.moved then
+			if (direction == "right") then
+				subscriber:LeftOrRight(1)
+			elseif (direction == "left") then
+				subscriber:LeftOrRight(-1)
+			elseif (direction == "up") then
+				subscriber:UpOrDown(-1)
+			elseif (direction == "down") then
+				subscriber:UpOrDown(1)
+			end
+		end
+	end
+end
+
+local function stop_running()
+	input.key = nil
+	for i, subscriber in pairs(input.subscribers) do
+		subscriber:stopRunning()
+	end
+end
+
+local function going_somewhere(key)
+	input.key = key
+	if key==32 then
+		input.grab=true
+	elseif (key==113 or key==357) then
+		move_to("up")
+	elseif (key==97 or key==359) then
+		move_to("down")
+	elseif (key==111 or key==356) then
+		move_to("left")
+	elseif (key==112 or key==358) then
+		move_to("right")
+	end
+end
+
+
+local function swipe_direction(tap_count)
+	local startX = movements[tap_count].start_loc.x
+	local startY = movements[tap_count].start_loc.y
+	local endX   = movements[tap_count].end_loc.x
+	local endY   = movements[tap_count].end_loc.y
+
+	local moveX = endX - startX
+	local moveY = endY - startY
+	
+	print("swipe_direction: ", startX, startY, endX, endY, tap_count)
+	
+	if (math.abs(moveX) > ONE_STEP) and (math.abs(moveX) > math.abs(moveY)) then
+
+		if (startX < endX) then -- right
+			
+			going_somewhere(112)
+			movements[tap_count].joystick.x = 10
+		else -- left
+			going_somewhere(111)
+			movements[tap_count].joystick.x = -10
+		end
+		movements[tap_count].joystick.y = 0
+
+		print("swipe detected: ", moveX, tap_count)
+				
+		-- movements[tap_count].start_loc.x = endX
+		-- movements[tap_count].start_loc.y = endY
+		
+	elseif math.abs(moveY) > ONE_STEP then 
+		if (startY < endY) then -- up
+			going_somewhere(113)
+			movements[tap_count].joystick.y = 10
+		else -- down
+			going_somewhere(97)
+			movements[tap_count].joystick.y = -10
+		end
+		movements[tap_count].joystick.x = 0
+		
+		print("swipe detected: ", moveY, tap_count)
+		-- movements[tap_count].start_loc.x = endX
+		-- movements[tap_count].start_loc.y = endY
+		
+	else
+		-- not quite far enough
+		print("no swipe:", moveX, moveY, tap_count)
+		movements[tap_count].joystick.x = 0
+		movements[tap_count].joystick.y = 0
+	end
+end
 
 -- someone 'points' at location x,y on the screen
 local function pointCallback ( x, y )
 	-- this function is called when the touch is registered (before clickCallback)
 	-- or when the mouse cursor is moved
 	mouseX, mouseY = hud_layer:wndToWorld ( x, y )
-	if down_counter>0 then
-
+	if tap_count>0 then
+		print("pointCallback, tap-count:", tap_count)
 		endX, endY = mouseX, mouseY
-		movements[down_counter].end_loc = {x=endX, y=endY}
+		movements[tap_count].end_loc = {x=endX, y=endY}
 		
-		swipe_direction(down_counter)
+		swipe_direction(tap_count)
 	end
 	
 end
 
 
-function swipe_direction(down_counter)
-	local running  = nil
-	local one_step = nil
-		
-	local startX = movements[down_counter].start_loc.x
-	local startY = movements[down_counter].start_loc.y
-	local endX   = movements[down_counter].end_loc.x
-	local endY   = movements[down_counter].end_loc.y
-				
-	local moveX = endX - startX
-	local moveY = endY - startY
-	if (math.abs(moveX) > ONE_STEP) and (math.abs(moveX) > math.abs(moveY)) then
-
-		if (startX < endX) then
-			move_to = "right"
-			joystick_x = 10
-		else
-			move_to = "left"
-			joystick_x = -10
-		end
-		joystick_y = 0
-
-		print("swipe detected: ", moveX, "move to:", move_to, down_counter)
-		
-		-- movements[down_counter].start_loc.x = endX
-		-- movements[down_counter].start_loc.y = endY
-		
-	elseif math.abs(moveY) > ONE_STEP then 
-		if (startY < endY) then
-			move_to = "up"
-			joystick_y = 10
-		else
-			move_to = "down"
-			joystick_y = -10
-		end
-		joystick_x = 0
-		
-		print("swipe detected: ", moveY, "move to:", move_to, down_counter)
-		-- movements[down_counter].start_loc.x = endX
-		-- movements[down_counter].start_loc.y = endY
-		
-	else
-		-- not quite far enough
-		print("no swipe:", moveX, moveY, down_counter)
-		joystick_x = 0
-		joystick_y = 0
-	end
-	input.must_move = move_to
-end
-
 function onDraw ( index, xOff, yOff, xFlip, yFlip )
 	if (startX and startY) then
-	    MOAIDraw.drawCircle ( startX+joystick_x, startY+joystick_y, 20)
+	    MOAIDraw.drawCircle ( startX+movements[tap_count].joystick.x, startY+movements[tap_count].joystick.y, 20)
 	    MOAIDraw.drawCircle ( startX, startY, 64)
 	end
 
 end
 
 function clickCallback ( down )
+
 	-- this function is called when touch/click 
 	-- is registered
 --	local pick = input.partition:propForPoint ( mouseX, mouseY )
 
+	if MOAIInputMgr.device.touch:hasTouches() then
+		local t1,t2,t3 = MOAIInputMgr.device.touch:getActiveTouches()
+		
+		if t1 then
+			print("touch:", t1)
+		end
+		if t2 then
+			print("touch:", t2)
+		end
+		if t3 then
+			print("touch:", t3)
+		end
+
+
+	end
+	
 	if down then
-		input.touch_down = true
-		input.moved = false
-		delta_time = socket.gettime()
-		down_counter = down_counter + 1
+		tap_count = tap_count + 1
+		print("clickCallback down, tap-count:", tap_count)
 		startX, startY = mouseX, mouseY
-		movements[down_counter] = { start_loc, end_loc }
-		movements[down_counter].start_loc = {x=startX, y=startY}
-		if down_counter > 1 then
+		movements[tap_count] = { start_loc, end_loc }
+		movements[tap_count].start_loc = {x=startX, y=startY}
+		if tap_count > 1 then
 			input.grab = true
 		end
 		
-		-- draw a circle
+		-- draw a joystick
+		movements[tap_count].joystick = { x=0, y=0 }
 		
 		scriptDeck = MOAIScriptDeck.new ()
 		scriptDeck:setRect ( -64, -64, 64, 64 )
 		scriptDeck:setDrawCallback ( onDraw )
 
-		prop = MOAIProp2D.new ()
-		prop:setDeck ( scriptDeck )
-		hud_layer:insertProp ( prop )
+		movements[tap_count].prop = MOAIProp2D.new ()
+		movements[tap_count].prop:setDeck ( scriptDeck )
+		hud_layer:insertProp ( movements[tap_count].prop )
 		
 	else
-		down_counter = down_counter - 1
-		
-		if down_counter < 1 then
+		hud_layer:removeProp(movements[tap_count].prop)
+		tap_count = tap_count - 1
+		print("clickCallback up, tap-count:", tap_count)
+		stop_running()
+		if tap_count < 1 then
 			print("setting grab to false on touching")
 			input.grab = false
-			input.touch_down = false
-			
-			if ((socket.gettime() - delta_time) < ONE_STEP_TIME) and input.moved then
-				input.must_move = nil
-				input.moved = false
-				print("swipe time (stop moving)", socket.gettime() - delta_time)
-			else
-				print("swipe time (moving)", socket.gettime() - delta_time)
-			end
-			delta_time = 0
-			
-			joystick_x = 0
-			joystick_y = 0
-
-			hud_layer:removeProp(prop)
 		end
 	end
 	
@@ -190,6 +223,13 @@ local function init_callbacks()
 	
 end
 
+function input:update()
+	if input.key then
+		print(frame_counter ..": update", input.key)
+		going_somewhere(input.key)
+	end
+end
+
 function input:createHud(viewport)
 	
 	init_callbacks()
@@ -209,6 +249,7 @@ function input:createHud(viewport)
 	return hud_layer
 end
 
+
 function input:createButtons()
 
 	if(MOAIInputMgr.device.keyboard) then
@@ -217,29 +258,12 @@ function input:createButtons()
 	        function(key,down)
 				
 	            if down==true then
-					input.touch_down = true
-					self.key = key
-					if key==32 then
-						self.grab=true
-					-- up,down=q (113),a (97), left,right=o (111), p (112)
-					elseif (key==113 or key==357) then
-						input.must_move = "up"
-					elseif (key==97 or key==359) then
-						input.must_move = "down"
-					elseif (key==111 or key==356) then
-						input.must_move = "left"
-					elseif (key==112 or key==358) then
-						input.must_move = "right"
-					end
+					going_somewhere(key)
 				else
-					input.touch_down = false
+					stop_running()
 					if key==32 then
 						print("setting grab to false in keyboard")
-						self.grab=false
-					else
-						if (self.key==key) then -- it might have changed with a quick move
-			--				input.must_move = nil
-						end
+						input.grab=false
 					end
 					
 	            end

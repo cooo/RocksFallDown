@@ -1,8 +1,6 @@
 local rockford = boulderdash.Derive("base")
 
-
 rockford.restless_timer = nil
-
 rockford.config_animations = {
 	entrance = {
 		offset = 5,
@@ -88,7 +86,6 @@ end
 
 function rockford:stopRunning()
 	print("stop running")
-	input.must_move = nil
 	if self.currentAnimation and (self.currentAnimation.name=="left" or self.currentAnimation.name=="right") then
 		self:stopCurrentAnimation()
 		rockford.prop:setIndex(1)
@@ -100,6 +97,11 @@ function rockford:wink()
 	local random   = math.random(1, 3)
 	local twitches = { "wink", "tap", "winktap"}
 	rockford:startAnimation(twitches[random])
+end
+
+function rockford:loaded()
+	scoreboard.one_second_timer         = Moai:createLoopTimer(1.0, scoreboard.countdown)
+	audio:play("twang")
 end
 
 function rockford:load( x, y )
@@ -115,36 +117,17 @@ function rockford:load( x, y )
 		self:animateRockford ( name, def.offset, def.length, def.time, def.mode )
     end
 
+	input.subscribers = { self }
+
     rockford.restless_timer = Moai:createLoopTimer(2.0, rockford.wink)
-	rockford:startAnimation("entrance", audio:play("twang"))
+	rockford:startAnimation("entrance", rockford:loaded())
 end
 
-function rockford:update(dt)
+function rockford:update()
 	local x,y = self:getPos()
 	self.prop:setLoc (Moai:x_and_y(x,y) )
 	
-	self:move(dt)
 	self:he_might_die()
-end
-
--- move him around or grab something
-function rockford:move(dt)
-
-	if not (boulderdash.dead or boulderdash.done) then
-		if (input.must_move == "left") then
-			rockford:LeftOrRight(-1)
-		elseif (input.must_move == "right") then
-			rockford:LeftOrRight(1)
-		elseif (input.must_move == "up") then
-			rockford:UpOrDown(-1)
-		elseif (input.must_move == "down") then
-			rockford:UpOrDown(1)
-		end
-		
-		if not input.touch_down and input.must_move then
-			rockford:stopRunning()
-		end
-	end
 end
 
 -- when a rock or diamond falls on his head rockford dies
@@ -241,13 +224,11 @@ end
 
 
 function rockford:doMoveRockford(dx,dy)
-
+	print(frame_counter .. ": " .. "move x,y:", dx,dy, "grab: ", input.grab)
 	self:doMove(dx,dy)
 
 	local xr,yr = self:getPos()
 	camera:movement(xr,yr, dx, dy)
-	
-	input.moved = true
 end
 
 function rockford:doGrabRockford(x,y)
@@ -263,6 +244,5 @@ function rockford:consume(object)
 		return true
 	end
 end
-
 
 return rockford

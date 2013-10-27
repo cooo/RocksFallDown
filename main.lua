@@ -12,11 +12,12 @@
 -- function gameloop:draw()
 -- end
 
-FRAMES = 10
+FRAMES = 5
 require("gameloop")
+frame_counter = 0
 
 local function forever(dt)
-	gameloop:update(dt)
+	gameloop:update()
 	gameloop:draw()
 end
 

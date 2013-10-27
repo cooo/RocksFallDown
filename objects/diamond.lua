@@ -11,19 +11,13 @@ function diamond:load( x, y )
 	Moai:createAnimation(diamond.strip, diamond.prop)	
 end
 
-function diamond:update(dt)
+function diamond:update()
   	self:fall()
 
 	local x,y = self:getPos()
 	diamond.prop:setLoc ( Moai:x_and_y(x,y) )
 end
 
-function diamond:draw()
-	-- local x, y = self:getPos()
-	-- local img  = self:getImage()
-	-- love.graphics.drawq(img, self.images[self.sprite_index or 1], x*self.scale, y*self.scale)
-
-end
 
 function diamond:consume()
 	layer:removeProp(self.prop)

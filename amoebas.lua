@@ -76,7 +76,7 @@ function amoebas:clear()
 	amoebas.grow_directions = {}
 end
 
-function amoebas:update(dt)
+function amoebas:update()
 	if amoebas.present then
 		for i, amoeba_event in pairs(amoebas.events) do
 			if amoeba_event.happens() then

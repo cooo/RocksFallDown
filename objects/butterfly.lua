@@ -15,8 +15,8 @@ function butterfly:load( x, y )
 	Moai:createAnimation(butterfly.strip, butterfly.prop)	
 end
 
-function butterfly:update(dt)
-	self:move(dt)
+function butterfly:update()
+	self:move()
 end
 
 function butterfly:space_is_empty_to_the(direction)
@@ -43,7 +43,7 @@ function butterfly:rotateLeft()
 	butterfly.facing = faces[orientation]
 end
 
-function butterfly:move(dt)
+function butterfly:move()
 	local x, y = self:getPos()
 	local right_orientation = orientation + 1 -- turn left
 	if (right_orientation > 4 ) then right_orientation = 1 end

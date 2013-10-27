@@ -17,8 +17,8 @@ boulderdash.flash = false
 
 local register = {}
 
-delay = 0.1
-delay_dt = 0
+--delay = 0.1
+--delay_dt = 0
 
 function id(x,y)
 	return "x" .. x .. "y" .. y
@@ -142,7 +142,7 @@ function boulderdash.Create(name, x, y, callback)
 	x = x or 0
 	y = y or 0
 	if register[name] then
-		local object = register[name]()
+		local object = assert(register[name]())
 		object:load(x,y)
 		object.type = name
 		object.id = id(x,y)
@@ -165,14 +165,16 @@ end
 
 
 function boulderdash:update(dt)
-	if delay_dt > delay then
+	frame_counter = frame_counter + 1
+--	if delay_dt > delay then
 
 		amoebas.clear()
-
+		input:update()
+		
 		for i, object in pairs(boulderdash.objects) do
 			if object.update then
 				if not object.moved then
-					object:update(dt)
+					object:update()
 					object.moved = true
 				end
 			end
@@ -196,13 +198,14 @@ function boulderdash:update(dt)
 		end
 	
 		-- 
-		amoebas:update(delay_dt)
-		scoreboard:update(dt)
+		amoebas:update()
+		scoreboard:update()
+
 		-- menu:update(dt)
 		
-		delay_dt = 0		
-    end
-	delay_dt = delay_dt + dt
+--		delay_dt = 0		
+--    end
+--	delay_dt = delay_dt + dt
 	
 
 end
@@ -214,10 +217,7 @@ end
 
 function boulderdash:draw()
 	for i, object in pairs(boulderdash.objects) do
-		if object.draw then
-			object:draw()
-			object.moved = false
-		end
+		object.moved = false
 	end
 	
 --	menu:draw()

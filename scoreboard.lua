@@ -25,7 +25,7 @@ function scoreboard:load()
 	self.diamonds_to_get          = level_loader.games[menu.game_index].caves[menu.cave_index].diamonds_to_get
 	self.diamonds_are_worth       = level_loader.games[menu.game_index].caves[menu.cave_index].diamonds_are_worth
 	self.extra_diamonds_are_worth = level_loader.games[menu.game_index].caves[menu.cave_index].extra_diamonds_are_worth
-	self.one_second_timer         = Moai:createLoopTimer(1.0, scoreboard.countdown)
+	self.one_second_timer         = nil
 		
 	scoreboard.number_lua = loadfile( boulderdash.objpath .. "number.lua" )
 	scoreboard:diamonds()
@@ -45,7 +45,7 @@ function scoreboard.Create(name, x, y, i)
 end
 
 
-function scoreboard:update(dt)
+function scoreboard:update()
 	
 	if boulderdash.done then
 		scoreboard.countdown()

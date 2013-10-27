@@ -7,10 +7,6 @@ function dirt:load( x, y )
 	self.prop  = Moai:createProp(layer, quad, x, y)	
 end
 
-function dirt:update(dt)
-
-end
-
 function dirt:consume()
 	layer:removeProp(self.prop)
 	audio:play("eat_dirt")

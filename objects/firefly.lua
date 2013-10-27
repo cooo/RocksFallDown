@@ -14,8 +14,8 @@ function firefly:load( x, y )
 	Moai:createAnimation(firefly.strip, firefly.prop)	
 end
 
-function firefly:update(dt)
-	self:move(dt)
+function firefly:update()
+	self:move()
 end
 
 
@@ -43,7 +43,7 @@ function firefly:rotateLeft()
 	firefly.facing = faces[orientation]
 end
 
-function firefly:move(dt)
+function firefly:move()
 	local x, y = self:getPos()
 	local left_orientation = orientation - 1 -- turn left
 	if (left_orientation < 1) then left_orientation = 4 end
